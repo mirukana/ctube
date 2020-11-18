@@ -10,16 +10,12 @@
     <body>
         <main class="thumb-grid">
             {% for entry in entries %}
-                <a href="{{ entry.site_url }}" class="thumb">
-                    <img src="{{ entry.small_thumbnail }}" alt="Thumbnail"
-                         width=256>
-
-                    <div class="thumb-duration">{{ entry.duration }}</div>
-                    <div class="thumb-title">{{ entry.title }}</div>
-                    <div class="thumb-uploader">{{ entry.uploader }}</div>
-                    <!-- <div class="thumb-date"> - </div> -->
-                    <div class="thumb-views">{{ entry.view_count }}</div>
-                </div>
+                <iframe
+                    title="{{ entry.title }}"
+                    src="{{ entry.preview_url }}"
+                    scrolling="no"
+                    loading="lazy"
+                ></iframe>
             {% endfor %}
         </main>
     </body>

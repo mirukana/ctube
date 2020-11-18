@@ -17,13 +17,25 @@ a
     color: hsl(165, 50%, 70%)
     text-decoration: none
 
+iframe
+    overflow: hidden
+    border: 0
+
 .thumb-grid
     display: flex
     flex-flow: row wrap
 
+.thumb-grid iframe
+    margin: 16px
+    margin-bottom: 0
+    width: 256px
+    height: 256px
+
 .thumb
     display: block
-    margin: 16px
+    width: 256px
+
+.thumb img
     width: 256px
 
 .thumb-uploader, .thumb-date, .thumb-views

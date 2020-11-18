@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="static/css/main.css">
+    </head>
+    <body>
+        <a href="{{ watch_url }}" class="thumb" target="_top">
+            <img src="{{ small_thumbnail }}" alt="Thumbnail" loading="lazy">
+
+            <div class="thumb-duration">{{ duration }}</div>
+            <div class="thumb-title">{{ title }}</div>
+            <div class="thumb-uploader">{{ uploader }}</div>
+            <!-- <div class="thumb-date"> - </div> -->
+            <div class="thumb-views">{{ view_count }}</div>
+        </a>
+    </body>
+</html>

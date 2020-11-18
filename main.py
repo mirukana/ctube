@@ -31,16 +31,23 @@ async def results(request: Request, search_query: str):
     query   = quote_plus(search_query)
     entries = ytdl.extract_info(f"ytsearch10:{query}")["entries"]
 
-    coros   = [video_info(entry["id"]) for entry in entries]
-    details = await asyncio.gather(*coros)
+    for entry in entries:
+        entry["preview_url"] = "/preview?video_id=%s" % entry["id"]
 
-    for entry, info in zip(entries, details):
-        entry["small_thumbnail"] = fitting_thumbnail(info["thumbnails"], 256)
-        entry["full_thumbnail"]  = largest_thumbnail(info["thumbnails"])
-        entry["site_url"]        = "/watch?v=%s" % entry["id"]
-
-    params = {"request": request, "entries": entries}
+    params = {"request": request, "query": query, "entries": entries}
     return templates.TemplateResponse("results.html.jinja", params)
+
+
+@app.get("/preview", response_class=HTMLResponse)
+async def preview(request: Request, video_id: str):
+    info   = await video_info(video_id)
+    params = {
+        **info,
+        "request":         request,
+        "small_thumbnail": fitting_thumbnail(info["thumbnails"], 256),
+        "watch_url":       "/watch?v=%s" % info["id"],
+    }
+    return templates.TemplateResponse("preview.html.jinja", params)
 
 
 @app.get("/watch", response_class=HTMLResponse)
@@ -68,10 +75,3 @@ def fitting_thumbnail(thumbnails: List[Dict[str, Any]], for_width: int) -> str:
             return thumb["url"]
 
     return thumbnails[-1]["url"]
-
-
-def largest_thumbnail(thumbnails: List[Dict[str, Any]]) -> str:
-    if not thumbnails:
-        return "static/images/no_thumbnail.png"
-
-    return max(thumbnails, key=lambda t: t["width"])["url"]
