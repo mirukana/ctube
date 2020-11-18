@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{ query }}</title>
+        <meta charset="utf-8">
+        <meta name="viewport"
+              content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link rel="stylesheet" href="static/css/main.css">
+    </head>
+    <body>
+        <main class="thumb-grid">
+            {% for entry in entries %}
+                <a href="{{ entry.site_url }}" class="thumb">
+                    <img src="{{ entry.small_thumbnail }}" alt="Thumbnail"
+                         width=256>
+
+                    <div class="thumb-duration">{{ entry.duration }}</div>
+                    <div class="thumb-title">{{ entry.title }}</div>
+                    <div class="thumb-uploader">{{ entry.uploader }}</div>
+                    <!-- <div class="thumb-date"> - </div> -->
+                    <div class="thumb-views">{{ entry.view_count }}</div>
+                </div>
+            {% endfor %}
+        </main>
+    </body>
+</html>
