@@ -1,5 +1,10 @@
 // vim: shiftwidth=4
 
+$thumb_width: 256px
+$row_thumbs:  4
+$spacing:     16px
+$page-width: ($thumb_width + $spacing * 2) * $row_thumbs
+
 html
     font-size: 62.5%
     height: 100%
@@ -10,7 +15,7 @@ body
     font-family: Roboto, "Noto Sans", "Droid Sans", Verdana, sans-serif
     font-size: 1.6rem
     line-height: 120%
-    height: 100%
+    min-height: 100%
     margin: 0
 
 a
@@ -24,25 +29,36 @@ iframe
 .thumb-grid
     display: flex
     flex-flow: row wrap
+    align-content: flex-start
+    justify-content: flex-start
+    max-width: $page-width
+    margin: 0 auto
 
 .thumb-grid iframe
     margin: 16px
     margin-bottom: 0
-    width: 256px
-    height: 256px
+    width: $thumb_width
+    height: $thumb_width
 
 .thumb
     display: block
-    width: 256px
+    width: $thumb_width
 
 .thumb img
-    width: 256px
+    width: $thumb_width
 
 .thumb-uploader, .thumb-date, .thumb-views
     font-size: 1.3rem
 
+.watch-body
+    display: flex
+    flex-flow: column nowrap
+
 .video
     width: 100vw
     height: 56.26vw
-    max-width: 1920px
     max-height: 75%
+
+.related
+    width: 100%
+    height: $thumb_width * 10

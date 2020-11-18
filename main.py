@@ -1,7 +1,8 @@
 import asyncio
+import random
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 from urllib.parse import quote_plus
 
 from async_lru import alru_cache
@@ -27,14 +28,17 @@ async def home():
 
 
 @app.get("/results", response_class=HTMLResponse)
-async def results(request: Request, search_query: str):
-    query   = quote_plus(search_query)
-    entries = ytdl.extract_info(f"ytsearch10:{query}")["entries"]
+async def results(
+    request: Request, search_query: str, exclude_id: Optional[str] = None,
+):
+    entries = ytdl.extract_info(f"ytsearch10:{search_query}")["entries"]
 
     for entry in entries:
         entry["preview_url"] = "/preview?video_id=%s" % entry["id"]
 
-    params = {"request": request, "query": query, "entries": entries}
+    entries = [e for e in entries if not exclude_id or e["id"] != exclude_id]
+
+    params = {"request": request, "query": search_query, "entries": entries}
     return templates.TemplateResponse("results.html.jinja", params)
 
 
@@ -54,7 +58,11 @@ async def preview(request: Request, video_id: str):
 async def watch(request: Request, v: str):
     video_id = v
     info     = await video_info(video_id)
-    params   = {"request": request, **info}
+    params   = {
+        **info,
+        "request":     request,
+        "related_url": related_url(info),
+    }
     return templates.TemplateResponse("watch.html.jinja", params)
 
 
@@ -75,3 +83,18 @@ def fitting_thumbnail(thumbnails: List[Dict[str, Any]], for_width: int) -> str:
             return thumb["url"]
 
     return thumbnails[-1]["url"]
+
+
+def related_url(video_info: Dict[str, Any]) -> str:
+    terms = (video_info["tags"] or []).copy()
+    random.shuffle(terms)
+
+    if len(terms) < 5:
+        terms += video_info["title"].split()
+        terms += video_info["description"].split()
+
+    if len(terms) > 15:
+        terms = terms[:15]
+
+    query = quote_plus(" ".join(terms))
+    return f"/results?search_query={query}&exclude_id={video_info['id']}"

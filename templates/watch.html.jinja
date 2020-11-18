@@ -7,13 +7,20 @@
               content="width=device-width, initial-scale=1, maximum-scale=1">
         <link rel="stylesheet" href="static/css/main.css">
     </head>
-    <body>
+    <body class="watch-body">
         <iframe
             class="video"
             loading="lazy"
             src="https://www.youtube-nocookie.com/embed/{{ id }}"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen
+        ></iframe>
+
+        <iframe
+            class="related"
+            src="{{ related_url }}"
+            scrolling="no"
+            loading="lazy"
         ></iframe>
     </body>
 </html>
