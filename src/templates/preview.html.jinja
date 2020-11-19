@@ -6,9 +6,11 @@
     </head>
     <body>
         <a href="{{ watch_url }}" class="thumb" target="_top">
-            <img src="{{ small_thumbnail }}" alt="Thumbnail" loading="lazy">
+            <div class="image-wrapper">
+                <img src="{{ small_thumbnail }}" alt="Thumb" loading="lazy">
+                <div class="thumb-duration">{{ human_duration }}</div>
+            </div>
 
-            <div class="thumb-duration">{{ duration }}</div>
             <div class="thumb-title">{{ title }}</div>
             <div class="thumb-uploader">{{ uploader }}</div>
             <!-- <div class="thumb-date"> - </div> -->

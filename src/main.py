@@ -2,6 +2,7 @@ import asyncio
 import random
 import re
 from concurrent.futures import ThreadPoolExecutor
+from datetime import timedelta
 from functools import partial
 from typing import Any, Dict, List, Optional
 from urllib.parse import quote_plus
@@ -51,6 +52,7 @@ async def preview(request: Request, video_id: str):
         "request":         request,
         "small_thumbnail": fitting_thumbnail(info["thumbnails"], 256),
         "watch_url":       "/watch?v=%s" % info["id"],
+        "human_duration":  format_duration(info["duration"]),
     }
     return templates.TemplateResponse("preview.html.jinja", params)
 
@@ -121,3 +123,7 @@ def related_url(video_info: Dict[str, Any]) -> str:
 
     query = quote_plus(" ".join(terms))
     return f"/results?search_query={query}&exclude_id={video_info['id']}"
+
+
+def format_duration(seconds: float) -> str:
+    return re.sub(r"^0:", "", str(timedelta(seconds=seconds)))

@@ -5,13 +5,15 @@ $row_thumbs:  4
 $spacing:     16px
 $page-width: ($thumb_width + $spacing * 2) * $row_thumbs
 
+$text: hsl(0, 0, 70%)
+
 html
     font-size: 62.5%
     height: 100%
 
 body
     background: hsl(240, 27%, 14%)
-    color: hsl(0, 0, 70%)
+    color: $text
     font-family: Roboto, "Noto Sans", "Droid Sans", Verdana, sans-serif
     font-size: 1.6rem
     line-height: 120%
@@ -44,11 +46,27 @@ iframe
     display: block
     width: $thumb_width
 
+.thumb .image-wrapper
+    width: $thumb_width
+    position: relative
+
 .thumb img
     width: $thumb_width
 
+.thumb-duration
+    position: absolute
+    bottom: $spacing / 2
+    right: $spacing / 4
+    color: $text
+    background: hsla(0, 0%, 0%, 0.7)
+    padding: $spacing / 2
+
+.thumb-title
+    color: $text
+
 .thumb-uploader, .thumb-date, .thumb-views
     font-size: 1.3rem
+    color: $text
 
 .watch-body
     display: flex
