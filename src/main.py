@@ -1,5 +1,6 @@
 import asyncio
 import random
+import re
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 from typing import Any, Dict, List, Optional
@@ -89,12 +90,34 @@ def related_url(video_info: Dict[str, Any]) -> str:
     terms = (video_info["tags"] or []).copy()
     random.shuffle(terms)
 
-    if len(terms) < 5:
-        terms += video_info["title"].split()
-        terms += video_info["description"].split()
+    terms += video_info["title"].split()
+    terms += set(video_info["description"].split())
 
-    if len(terms) > 15:
-        terms = terms[:15]
+    terms = [t.lower() for t in terms]
+    terms = re.split(r"\s+", re.sub(r"\W", " ", " ".join(terms)).strip())
+
+    useless_words = {
+        "ourselves", "hers", "between", "yourself", "but", "again", "there",
+        "about", "once", "during", "out", "very", "having", "with", "they",
+        "own", "an", "be", "some", "for", "do", "its", "yours", "such",
+        "into", "of", "most", "itself", "other", "off", "is", "s", "am", "or",
+        "who", "as", "from", "him", "each", "the", "themselves", "until",
+        "below", "are", "we", "these", "your", "his", "through", "don", "nor",
+        "me", "were", "her", "more", "himself", "this", "down", "should",
+        "our", "their", "while", "above", "both", "up", "to", "ours", "had",
+        "she", "all", "no", "when", "at", "any", "before", "them", "same",
+        "and", "been", "have", "in", "will", "on", "does", "yourselves",
+        "then", "that", "because", "what", "over", "why", "so", "can", "did",
+        "not", "now", "under", "he", "you", "herself", "has", "just", "where",
+        "too", "only", "myself", "which", "those", "i", "after", "few", "whom",
+        "t", "being", "if", "theirs", "my", "against", "a", "by", "doing",
+        "it", "how", "further", "was", "here", "than",
+    }
+
+    terms = [t for t in terms if t not in useless_words]
+
+    if len(terms) > 9:
+        terms = terms[:9]
 
     query = quote_plus(" ".join(terms))
     return f"/results?search_query={query}&exclude_id={video_info['id']}"
