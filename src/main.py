@@ -50,6 +50,7 @@ async def results(
 
     for entry in entries:
         entry["preview_url"] = "/preview?video_id=%s" % entry["id"]
+        entry["watch_url"]   = "/watch?v=%s" % entry["id"]
 
     previous = \
         request.url.include_query_params(page=page - 1) if page > 1 else ""
