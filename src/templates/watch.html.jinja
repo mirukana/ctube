@@ -9,7 +9,7 @@
     </head>
     <body class="watch-body">
         <iframe
-            class="video"
+            class="video-frame"
             loading="lazy"
             src="https://www.youtube-nocookie.com/embed/{{ id }}"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -17,10 +17,11 @@
         ></iframe>
 
         <iframe
-            class="related"
+            class="related-frame"
             src="{{ related_url }}"
             scrolling="no"
             loading="lazy"
+            data-entries="{{ entries }}"
         ></iframe>
     </body>
 </html>

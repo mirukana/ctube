@@ -1,9 +1,11 @@
 // vim: shiftwidth=4
 
-$thumb_width:    256px
-$spacing:        16px
-$max_row_thumbs: 4
-$thumb_space:    ($thumb_width + $spacing * 2)
+$thumb_width:     256px
+$spacing:         16px
+$max_row_thumbs:  4
+$thumbs_per_page: 10
+$thumb_hspace:    ($thumb_width + $spacing * 2)
+$thumb_vspace:    ($thumb_width + $spacing)
 
 $text: hsl(0, 0, 70%)
 
@@ -34,15 +36,15 @@ iframe
     align-content: flex-start
     justify-content: flex-start
     margin: 0 auto
-    max-width: $thumb_space
+    max-width: $thumb_hspace
 
 @for $row_thumbs from 2 through $max_row_thumbs
-    @media all and (min-width: $thumb_space * $row_thumbs)
+    @media all and (min-width: $thumb_hspace * $row_thumbs)
         .thumb-grid
-            max-width: $thumb_space * $row_thumbs
+            max-width: $thumb_hspace * $row_thumbs
 
 .thumb-grid iframe
-    margin: 16px
+    margin: $spacing
     margin-bottom: 0
     width: $thumb_width
     height: $thumb_width
@@ -77,11 +79,16 @@ iframe
     display: flex
     flex-flow: column nowrap
 
-.video
+.video-frame
     width: 100vw
     height: 56.26vw
     max-height: 75%
 
-.related
+.related-frame
     width: 100%
-    height: $thumb_width * 10
+    height: $thumb_vspace * ceil($thumbs_per_page / 1)
+
+@for $row_thumbs from 2 through $max_row_thumbs
+    @media all and (min-width: $thumb_vspace * $row_thumbs)
+        .related-frame
+            height: $thumb_vspace * ceil($thumbs_per_page / $row_thumbs)
