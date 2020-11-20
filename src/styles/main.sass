@@ -44,10 +44,16 @@ nav
     align-content: stretch
     align-items: stretch
 
+    &[data-embedded="True"]
+        display: none
+
 .page-num
     padding: $spacing / 2 $spacing
     background: $inputs
     opacity: 0.8
+
+    &[data-num=""]
+        display: none
 
 input, .button
     color: $text
@@ -63,6 +69,9 @@ input, .button
 
 .button.next, .button.previous
     font-size: 1.8rem
+
+    &[href=""]
+        display: none
 
 nav input[type="search"]
     padding: $spacing / 2 + 2 $spacing

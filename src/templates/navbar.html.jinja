@@ -1,0 +1,16 @@
+<nav data-embedded="{{embedded}}">
+    <form action="/results">
+        <input
+            type="search"
+            name="search_query"
+            placeholder="Search"
+            value="{{ search_query }}"
+            autocomplete=true
+            autofocus=true
+        >
+    </form>
+
+    <a class="button previous" href="{{ previous_url }}">&lt;</a>
+    <span class="page-num" data-num="{{page_num}}">{{ page_num }}</span>
+    <a class="button next" href="{{ next_url }}">&gt;</a>
+</nav>

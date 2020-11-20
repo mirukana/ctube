@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
 from functools import partial
 from typing import Any, Dict, List, Optional
-from urllib.parse import quote_plus
+from urllib.parse import quote_plus, urlencode
 
 from async_lru import alru_cache
 from fastapi import FastAPI, Request
@@ -35,6 +35,7 @@ async def results(
     search_query: str,
     page:         int           = 1,
     exclude_id:   Optional[str] = None,
+    embedded:     bool          = False,
 ):
     wanted  = 10 * page
     total   = wanted + (1 if exclude_id else 0)
@@ -55,6 +56,7 @@ async def results(
         "page_num":     page,
         "previous_url": previous,
         "next_url":     request.url.include_query_params(page = page + 1),
+        "embedded":     embedded,
     }
     return templates.TemplateResponse("results.html.jinja", params)
 
@@ -136,8 +138,13 @@ def related_url(video_info: Dict[str, Any]) -> str:
     if len(terms) > 9:
         terms = terms[:9]
 
-    query = quote_plus(" ".join(terms))
-    return f"/results?search_query={query}&exclude_id={video_info['id']}"
+    params = urlencode({
+        "search_query": quote_plus(" ".join(terms)),
+        "exclude_id":   video_info["id"],
+        "embedded":     True,
+    })
+
+    return f"/results?{params}"
 
 
 def format_duration(seconds: float) -> str:
