@@ -50,11 +50,11 @@ async def results(
 
     params = {
         "request":      request,
-        "query":        search_query,
+        "search_query": search_query,
         "entries":      entries,
         "page_num":     page,
         "previous_url": previous,
-        "next_url":     request.url.include_query_params(page=page + 1),
+        "next_url":     request.url.include_query_params(page = page + 1),
     }
     return templates.TemplateResponse("results.html.jinja", params)
 

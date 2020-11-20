@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>{{ query }}</title>
+        <title>{{ search_query }}</title>
         <meta charset="utf-8">
         <meta name="viewport"
               content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -19,10 +19,21 @@
             {% endfor %}
         </div>
 
-        <div class="page-buttons">
-            <a class="button" href="{{ previous_url }}">Previous</a>
+        <nav>
+            <form action="/results">
+                <input
+                    type="search"
+                    name="search_query"
+                    placeholder="Search"
+                    value={{ search_query }}
+                    autocomplete=true
+                    autofocus=true
+                >
+            </form>
+
+            <a class="button previous" href="{{ previous_url }}">&lt;</a>
             <span class="page-num">{{ page_num }}</span>
-            <a class="button" href="{{ next_url }}">Next</a>
-        </div>
+            <a class="button next" href="{{ next_url }}">&gt;</a>
+        </nav>
     </body>
 </html>

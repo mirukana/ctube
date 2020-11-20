@@ -10,6 +10,10 @@ $thumb_vspace:    ($thumb_width + $spacing)
 $background: hsl(240, 27%, 14%)
 $inputs: hsl(240, 22%, 5%)
 $text: hsl(0, 0, 70%)
+$accent: hsl(165, 50%, 70%)
+$accent_dark: hsl(165, 50%, 30%)
+
+$anim_time: 0.125s
 
 html
     font-size: 62.5%
@@ -18,7 +22,7 @@ html
 body
     background: $background
     color: $text
-    font-family: Roboto, "Noto Sans", "Droid Sans", Verdana, sans-serif
+    font-family: Roboto, "Noto Sans", "Droid Sans", Ubuntu, Verdana, sans-serif
     font-size: 1.6rem
     line-height: 120%
     min-height: 100%
@@ -27,8 +31,44 @@ body
     flex-flow: column nowrap
 
 a
-    color: hsl(165, 50%, 70%)
+    color: $accent
     text-decoration: none
+
+nav
+    position: fixed
+    bottom: 0
+    width: 100%
+    display: flex
+    flex-flow: row nowrap
+    justify-content: center
+    align-content: stretch
+    align-items: stretch
+
+.page-num
+    padding: $spacing / 2 $spacing
+    background: $inputs
+    opacity: 0.8
+
+input, .button
+    color: $text
+    border: 0
+    outline: 0
+    background: $inputs
+    padding: $spacing / 2 $spacing
+    border: 2px solid transparent
+    transition: border-color $anim_time
+
+    &:focus
+        border-bottom: 1px solid $accent_dark
+
+.button.next, .button.previous
+    font-size: 1.8rem
+
+nav input[type="search"]
+    padding: $spacing / 2 + 2 $spacing
+
+.button[href=""]
+    opacity: 0.5
 
 iframe
     overflow: hidden
@@ -70,27 +110,15 @@ iframe
     right: $spacing / 4
     color: $text
     background: hsla(0, 0%, 0%, 0.7)
-    padding: $spacing / 2
+    padding: $spacing / 4 $spacing / 2
 
 .thumb-title
     color: $text
+    margin-top: $spacing / 2
 
 .thumb-uploader, .thumb-date, .thumb-views
     font-size: 1.3rem
     color: $text
-
-.page-buttons
-    margin: 0 auto
-
-.page-num
-    margin: 0 $spacing
-
-.button
-    background: $inputs
-    padding: $spacing / 2 $spacing
-
-.button[href=""]
-    opacity: 0.5
 
 .video-frame
     width: 100vw
