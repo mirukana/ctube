@@ -25,8 +25,9 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 @app.get("/", response_class=HTMLResponse)
-async def home():
-    return "hi"
+async def home(request: Request):
+    params = {"request": request}
+    return templates.TemplateResponse("results.html.jinja", params)
 
 
 @app.get("/results", response_class=HTMLResponse)
@@ -37,6 +38,10 @@ async def results(
     exclude_id:   Optional[str] = None,
     embedded:     bool          = False,
 ):
+
+    if not search_query:
+        return await home(request)
+
     wanted  = 10 * page
     total   = wanted + (1 if exclude_id else 0)
     entries = ytdl.extract_info(f"ytsearch{total}:{search_query}")["entries"]
