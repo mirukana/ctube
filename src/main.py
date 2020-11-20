@@ -31,17 +31,31 @@ async def home():
 
 @app.get("/results", response_class=HTMLResponse)
 async def results(
-    request: Request, search_query: str, exclude_id: Optional[str] = None,
+    request:      Request,
+    search_query: str,
+    page:         int           = 1,
+    exclude_id:   Optional[str] = None,
 ):
-    wanted  = 11 if exclude_id else 10
-    entries = ytdl.extract_info(f"ytsearch{wanted}:{search_query}")["entries"]
+    wanted  = 10 * page
+    total   = wanted + (1 if exclude_id else 0)
+    entries = ytdl.extract_info(f"ytsearch{total}:{search_query}")["entries"]
     entries = [e for e in entries if not exclude_id or e["id"] != exclude_id]
-    entries = entries[:10]
+    entries = entries[wanted - 10:wanted]
 
     for entry in entries:
         entry["preview_url"] = "/preview?video_id=%s" % entry["id"]
 
-    params = {"request": request, "query": search_query, "entries": entries}
+    previous = \
+        request.url.include_query_params(page=page - 1) if page > 1 else ""
+
+    params = {
+        "request":      request,
+        "query":        search_query,
+        "entries":      entries,
+        "page_num":     page,
+        "previous_url": previous,
+        "next_url":     request.url.include_query_params(page=page + 1),
+    }
     return templates.TemplateResponse("results.html.jinja", params)
 
 

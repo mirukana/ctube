@@ -7,6 +7,8 @@ $thumbs_per_page: 10
 $thumb_hspace:    ($thumb_width + $spacing * 2)
 $thumb_vspace:    ($thumb_width + $spacing)
 
+$background: hsl(240, 27%, 14%)
+$inputs: hsl(240, 22%, 5%)
 $text: hsl(0, 0, 70%)
 
 html
@@ -14,13 +16,15 @@ html
     height: 100%
 
 body
-    background: hsl(240, 27%, 14%)
+    background: $background
     color: $text
     font-family: Roboto, "Noto Sans", "Droid Sans", Verdana, sans-serif
     font-size: 1.6rem
     line-height: 120%
     min-height: 100%
     margin: 0
+    display: flex
+    flex-flow: column nowrap
 
 a
     color: hsl(165, 50%, 70%)
@@ -75,9 +79,18 @@ iframe
     font-size: 1.3rem
     color: $text
 
-.watch-body
-    display: flex
-    flex-flow: column nowrap
+.page-buttons
+    margin: 0 auto
+
+.page-num
+    margin: 0 $spacing
+
+.button
+    background: $inputs
+    padding: $spacing / 2 $spacing
+
+.button[href=""]
+    opacity: 0.5
 
 .video-frame
     width: 100vw
