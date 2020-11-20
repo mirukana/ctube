@@ -10,7 +10,7 @@ $thumb_vspace:    ($thumb_width + $spacing)
 $background: hsl(240, 27%, 14%)
 $inputs: hsl(240, 22%, 5%)
 $text: hsl(0, 0, 70%)
-$accent: hsl(165, 50%, 70%)
+$accent: hsl(165, 50%, 50%)
 $accent_dark: hsl(165, 50%, 30%)
 
 $anim_time: 0.125s
@@ -33,6 +33,10 @@ body
 a
     color: $accent
     text-decoration: none
+    transition: color $anim_time
+
+    &:hover
+        color: $accent_dark !important
 
 nav
     position: fixed
@@ -122,8 +126,8 @@ iframe
     padding: $spacing / 4 $spacing / 2
 
 .thumb-title
-    color: $text
     margin-top: $spacing / 2
+    color: $text
 
 .thumb-uploader, .thumb-date, .thumb-views
     font-size: 1.3rem
