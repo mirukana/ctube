@@ -7,8 +7,6 @@ from functools import partial
 from typing import Any, Dict, List
 from urllib.parse import quote_plus, urlencode
 
-from async_lru import alru_cache
-
 from .downloader import Downloader
 
 POOL = ThreadPoolExecutor(max_workers=16)
@@ -17,7 +15,6 @@ YTDL = Downloader({"extract_flat": "in_playlist"})
 pool_run = partial(asyncio.get_event_loop().run_in_executor, POOL)
 
 
-@alru_cache(maxsize=4096)
 async def video_info(video_id: str) -> Dict[str, Any]:
     get_info = partial(YTDL.extract_info, download=False)
     return await pool_run(get_info, video_id)  # type: ignore

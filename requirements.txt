@@ -2,5 +2,4 @@ fastapi     >= 0.61.2, < 0.62
 aiofiles    >= 0.4.0,  < 0.7
 jinja2      >= 2.11.2, < 3
 uvicorn     >= 0.12.2, < 0.13
-async_lru   >= 1.0.2,  < 2
 youtube_dl  >= 2020
