@@ -1,7 +1,9 @@
 #!/usr/bin/env sh
-set -e
 
-cd src
-mkdir -p static/css
-sassc styles/main.sass static/css/main.css
-uvicorn main:app --reload
+mkdir -p ything/static/css || exit 1
+
+while true; do
+    find ything -type f -not -name 'main.css' -not -path '*__pycache__*' |
+    entr -cdnr sh -c \
+        "sassc ything/styles/main.sass ything/static/css/main.css && sleep 0.2 && killall -9 uvicorn && uvicorn ything:APP $*"
+done
