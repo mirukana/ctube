@@ -1,5 +1,4 @@
 import asyncio
-import random
 import re
 from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
@@ -35,10 +34,9 @@ def fitting_thumbnail(thumbnails: List[Dict[str, Any]], for_width: int) -> str:
 
 def related_url(video_info: Dict[str, Any]) -> str:
     terms = (video_info["tags"] or []).copy()
-    random.shuffle(terms)
 
     terms += video_info["title"].split()
-    terms += set(video_info["description"].split())
+    terms += list(set(video_info["description"].split()))
 
     terms = [t.lower() for t in terms]
     terms = re.split(r"\s+", re.sub(r"\W", " ", " ".join(terms)).strip())
