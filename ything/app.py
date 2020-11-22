@@ -42,8 +42,12 @@ async def results(
     entries = entries[wanted - 10:wanted]
 
     for entry in entries:
-        entry["preview_url"] = "/preview?video_id=%s" % entry["id"]
-        entry["watch_url"]   = "/watch?v=%s" % entry["id"]
+        entry.update({
+            "preview_url":    "/preview?video_id=%s" % entry["id"],
+            "watch_url":      "/watch?v=%s" % entry["id"],
+            "human_duration": format_duration(entry["duration"]),
+            "human_views":    f"{entry['view_count']:,}",
+        })
 
     previous = \
         request.url.include_query_params(page=page - 1) if page > 1 else ""
@@ -80,6 +84,7 @@ async def preview(request: Request, video_id: str):
         "small_thumbnail": fitting_thumbnail(info["thumbnails"], 256),
         "watch_url":       "/watch?v=%s" % info["id"],
         "human_duration":  format_duration(info["duration"]),
+        "human_views":     f"{info['view_count']:,}",
     }
     return TEMPLATES.TemplateResponse("preview.html.jinja", params)
 

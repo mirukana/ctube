@@ -20,7 +20,9 @@
                         <div class="thumb-title">{{ entry.title }}</div>
                         <div class="thumb-uploader">{{ entry.uploader }}</div>
                         <!-- <div class="thumb-date"> - </div> -->
-                        <div class="thumb-views">{{ entry.view_count }}</div>
+                        <div class="thumb-views">
+                            <span class="eye">⦿ </span>{{ entry.human_views }}
+                        </div>
                     </a>
 
                     <iframe
