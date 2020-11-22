@@ -14,8 +14,10 @@
             <div class="thumb-title">{{ title }}</div>
             <div class="thumb-uploader">{{ uploader }}</div>
             <div class="thumb-details">
-                <span class="icon">⦿</span> {{ human_views }}
-                <span class="icon">🠝</span> {{ human_date }}
+                <span><span class="icon">🠝</span> {{ human_date }}</span>
+                <span><span class="icon">⦿</span> {{ human_views }}</span>
+                <span><span class="icon good">👍</span> {{ likes }}</span>
+                <span><span class="icon bad">👎</span> {{ dislikes }}</span>
             </div>
         </a>
     </body>

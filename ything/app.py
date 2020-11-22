@@ -87,6 +87,8 @@ async def preview(request: Request, video_id: str):
         "human_duration":  format_duration(info["duration"] or 0),
         "human_views":     format_thousands(info["view_count"] or 0),
         "human_date":      format_date(info["upload_date"] or "?"),
+        "likes":           format_thousands(info["like_count"] or 0),
+        "dislikes":        format_thousands(info["dislike_count"] or 0),
     }
     return TEMPLATES.TemplateResponse("preview.html.jinja", params)
 

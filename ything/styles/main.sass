@@ -13,6 +13,8 @@ $inputs: hsl(240, 22%, 5%)
 $text: hsl(0, 0, 70%)
 $accent: hsl(165, 50%, 50%)
 $accent_dark: hsl(165, 50%, 30%)
+$accent_good: hsl(140, 50%, 50%)
+$accent_bad: hsl(345, 50%, 50%)
 
 $anim_time: 0.125s
 
@@ -140,8 +142,20 @@ iframe
     font-size: 1.3rem
     color: $text
 
-    .icon
-        color: $accent
+.thumb-details
+    display: flex
+    justify-content: space-between
+
+.icon
+    // Kill emoji colors, get nice symbols
+    color: transparent
+    text-shadow: 0 0 0 $accent
+
+    &.good
+        text-shadow: 0 0 0 $accent_good
+
+    &.bad
+        text-shadow: 0 0 0 $accent_bad
 
 .video-frame
     width: 100vw

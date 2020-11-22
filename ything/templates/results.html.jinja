@@ -19,9 +19,11 @@
                         <img src="static/images/no_thumbnail.png">
                         <div class="thumb-title">{{ entry.title }}</div>
                         <div class="thumb-uploader">{{ entry.uploader }}</div>
-                        <!-- <div class="thumb-date"> - </div> -->
                         <div class="thumb-details">
-                            <span class="eye">⦿ </span>{{ entry.human_views }}
+                            <span>
+                                <span class="icon">⦿ </span>&nbsp;
+                                {{ entry.human_views }}
+                            </span>
                         </div>
                     </a>
 
