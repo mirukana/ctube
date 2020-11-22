@@ -6,10 +6,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from .utils import (
-    YTDL, fitting_thumbnail, format_date, format_duration, format_thousands,
-    related_url, video_info,
-)
+from .utils import YTDL, format_duration, format_thousands, video_info
 
 APP       = FastAPI()
 CWD       = Path(__file__).parent
@@ -58,9 +55,7 @@ async def results(
         "search_query": search_query,
         "entries":      entries,
         "page_num":     page,
-        "prev_page":    page - 1 if page > 1 else "",
         "prev_url":     prev_url,
-        "next_page":    page + 1,
         "next_url":     request.url.include_query_params(page = page + 1),
         "embedded":     embedded,
     }
@@ -81,17 +76,7 @@ async def search(
 @APP.get("/preview", response_class=HTMLResponse)
 async def preview(request: Request, video_id: str):
     info   = await video_info(video_id)
-    params = {
-        **info,
-        "request":         request,
-        "small_thumbnail": fitting_thumbnail(info["thumbnails"], 256),
-        "watch_url":       "/watch?v=%s" % info["id"],
-        "human_duration":  format_duration(info["duration"] or 0),
-        "human_views":     format_thousands(info["view_count"] or 0),
-        "human_date":      format_date(info["upload_date"] or "?"),
-        "likes":           format_thousands(info["like_count"] or 0),
-        "dislikes":        format_thousands(info["dislike_count"] or 0),
-    }
+    params = {**info, "request": request}
     return TEMPLATES.TemplateResponse("preview.html.jinja", params)
 
 
@@ -99,9 +84,5 @@ async def preview(request: Request, video_id: str):
 async def watch(request: Request, v: str):
     video_id = v
     info     = await video_info(video_id)
-    params   = {
-        **info,
-        "request":     request,
-        "related_url": related_url(info),
-    }
+    params   = {**info, "request": request}
     return TEMPLATES.TemplateResponse("watch.html.jinja", params)

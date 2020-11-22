@@ -15,8 +15,21 @@ pool_run = partial(asyncio.get_event_loop().run_in_executor, POOL)
 
 
 async def video_info(video_id: str) -> Dict[str, Any]:
-    get_info = partial(YTDL.extract_info, download=False)
-    return await pool_run(get_info, video_id)  # type: ignore
+    get_info   = partial(YTDL.extract_info, download=False)
+    info: dict = await pool_run(get_info, video_id)  # type: ignore
+
+    info.update({
+        "small_thumbnail": fitting_thumbnail(info["thumbnails"], 256),
+        "watch_url":       "/watch?v=%s" % info["id"],
+        "related_url":     related_url(info),
+        "human_duration":  format_duration(info["duration"] or 0),
+        "human_views":     format_thousands(info["view_count"] or 0),
+        "human_date":      format_date(info["upload_date"] or "?"),
+        "likes":           format_thousands(info["like_count"] or 0),
+        "dislikes":        format_thousands(info["dislike_count"] or 0),
+    })
+
+    return info
 
 
 def fitting_thumbnail(thumbnails: List[Dict[str, Any]], for_width: int) -> str:
