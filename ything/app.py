@@ -7,7 +7,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from .utils import (
-    YTDL, fitting_thumbnail, format_duration, related_url, video_info,
+    YTDL, fitting_thumbnail, format_date, format_duration, related_url,
+    video_info,
 )
 
 APP       = FastAPI()
@@ -85,6 +86,7 @@ async def preview(request: Request, video_id: str):
         "watch_url":       "/watch?v=%s" % info["id"],
         "human_duration":  format_duration(info["duration"]),
         "human_views":     f"{info['view_count']:,}",
+        "human_date":      format_date(info["upload_date"]),
     }
     return TEMPLATES.TemplateResponse("preview.html.jinja", params)
 

@@ -75,3 +75,7 @@ def related_url(video_info: Dict[str, Any]) -> str:
 
 def format_duration(seconds: float) -> str:
     return re.sub(r"^0:", "", str(timedelta(seconds=seconds)))
+
+
+def format_date(date: str) -> str:
+    return re.sub(r"(\d{4})(\d{2})(\d{2})", r"\1-\2-\3", date)
