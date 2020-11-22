@@ -46,8 +46,8 @@ async def results(
         entry.update({
             "preview_url":    "/preview?video_id=%s" % entry["id"],
             "watch_url":      "/watch?v=%s" % entry["id"],
-            "human_duration": format_duration(entry["duration"]),
-            "human_views":    format_thousands(entry["view_count"]),
+            "human_duration": format_duration(entry["duration"] or 0),
+            "human_views":    format_thousands(entry["view_count"] or 0),
         })
 
     previous = \
@@ -84,9 +84,9 @@ async def preview(request: Request, video_id: str):
         "request":         request,
         "small_thumbnail": fitting_thumbnail(info["thumbnails"], 256),
         "watch_url":       "/watch?v=%s" % info["id"],
-        "human_duration":  format_duration(info["duration"]),
-        "human_views":     format_thousands(info["view_count"]),
-        "human_date":      format_date(info["upload_date"]),
+        "human_duration":  format_duration(info["duration"] or 0),
+        "human_views":     format_thousands(info["view_count"] or 0),
+        "human_date":      format_date(info["upload_date"] or "?"),
     }
     return TEMPLATES.TemplateResponse("preview.html.jinja", params)
 
