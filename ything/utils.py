@@ -77,5 +77,19 @@ def format_duration(seconds: float) -> str:
     return re.sub(r"^0:", "", str(timedelta(seconds=seconds)))
 
 
-def format_date(date: str) -> str:
-    return re.sub(r"(\d{4})(\d{2})(\d{2})", r"\1-\2-\3", date)
+def format_date(ytdl_date: str) -> str:  # ytdl format example: 20200102
+    return re.sub(r"(\d{4})(\d{2})(\d{2})", r"\1-\2-\3", ytdl_date)
+
+
+def format_thousands(num: float) -> str:
+    num       = float("{: .3g}".format(num))
+    magnitude = 0
+
+    while abs(num) >= 1000:
+        magnitude += 1
+        num       /= 1000.0
+
+    return "{}{}".format(
+        "{:f}".format(int(num)).rstrip("0").rstrip("."),
+        ["", "K", "M", "B", "T"][magnitude],
+    )
