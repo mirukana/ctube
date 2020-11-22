@@ -143,14 +143,23 @@ iframe
 .video-frame
     width: 100vw
     height: 56.26vw
-    max-height: 75%
+    max-height: 96.4vh
 
 .related-frame
     width: 100%
     margin: $spacing 0
-    height: $preview_vspace * ceil($thumbs_per_page / 1)
+    height: $preview_vspace * $thumbs_per_page
 
 @for $row_thumbs from 2 through $max_row_thumbs
     @media all and (min-width: $preview_vspace * $row_thumbs)
         .related-frame
             height: $preview_vspace * ceil($thumbs_per_page / $row_thumbs)
+
+@media all and (min-width: 1280px)
+    .watch-body
+        flex-flow: row nowrap
+
+        .related-frame
+            margin: 0
+            width: $preview_hspace
+            height: $preview_vspace * $thumbs_per_page
