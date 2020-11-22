@@ -168,11 +168,36 @@ iframe
     &.bad
         text-shadow: 0 0 0 $accent_bad
 
-.video-frame
-    width: 100vw
-    height: 56.26vw
-    max-height: 100vh
-    margin-bottom: $spacing
+.watch-body
+    width: 100%
+
+.video-column
+    display: flex
+    flex-flow: column nowrap
+    width: 100%
+
+    .video-frame
+        width: 100%
+        height: 56.26vw
+        max-height: 95vh
+
+    .video-info
+        display: flex
+        flex-flow: row wrap
+        margin: $spacing $spacing / 2
+        margin-bottom: $spacing / 2
+        line-height: 150%
+
+        .title
+            flex-grow: 2
+            margin: 0 $spacing / 2
+
+        .video-details
+            display: flex
+            flex-flow: row wrap
+
+            & > span
+                margin: 0 $spacing / 2
 
 .related-frame
     width: 100%
@@ -196,9 +221,22 @@ iframe
     .watch-body
         flex-flow: row nowrap
 
+        .video-column
+            margin: 0 $spacing
+
+            .video-info
+                margin-left: 0
+                margin-right: 0
+
+                .title
+                    margin-left: 0
+
+                .video-details span:last-child
+                    margin-right: 0
+
         .related-frame
             margin: 0
-            width: $preview_hspace + $spacing * 2
+            width: $preview_hspace
 
             $input_space: $inputs_height + $spacing
             height: $preview_vspace * $thumbs_per_page + $input_space
