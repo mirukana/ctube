@@ -1,4 +1,5 @@
 import asyncio
+import html
 import re
 from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
@@ -19,14 +20,15 @@ async def video_info(video_id: str) -> Dict[str, Any]:
     info: dict = await pool_run(get_info, video_id)  # type: ignore
 
     info.update({
-        "small_thumbnail": fitting_thumbnail(info["thumbnails"], 256),
-        "watch_url":       "/watch?v=%s" % info["id"],
-        "related_url":     related_url(info),
-        "human_duration":  format_duration(info["duration"] or 0),
-        "human_views":     format_thousands(info["view_count"] or 0),
-        "human_date":      format_date(info["upload_date"] or "?"),
-        "likes":           format_thousands(info["like_count"] or 0),
-        "dislikes":        format_thousands(info["dislike_count"] or 0),
+        "small_thumbnail":  fitting_thumbnail(info["thumbnails"], 256),
+        "watch_url":        "/watch?v=%s" % info["id"],
+        "related_url":      related_url(info),
+        "human_duration":   format_duration(info["duration"] or 0),
+        "human_views":      format_thousands(info["view_count"] or 0),
+        "human_date":       format_date(info["upload_date"] or "?"),
+        "likes":            format_thousands(info["like_count"] or 0),
+        "dislikes":         format_thousands(info["dislike_count"] or 0),
+        "html_description": plain2html(info["description"] or ""),
     })
 
     return info
@@ -106,3 +108,7 @@ def format_thousands(num: float) -> str:
         "{:f}".format(int(num)).rstrip("0").rstrip("."),
         ["", "K", "M", "B", "T"][magnitude],
     )
+
+
+def plain2html(text: str) -> str:
+    return html.escape(text).replace("\n", "<br>").replace("\t", "&nbsp;" * 4)

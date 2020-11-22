@@ -17,6 +17,8 @@ $accent_dark: hsl(165, 50%, 30%)
 $accent_good: hsl(140, 50%, 50%)
 $accent_bad: hsl(345, 50%, 50%)
 
+$sans: Roboto, "Noto Sans", "Droid Sans", Ubuntu, Verdana, sans-serif
+
 $anim_time: 0.125s
 
 html
@@ -26,13 +28,16 @@ html
 body
     background: $background
     color: $text
-    font-family: Roboto, "Noto Sans", "Droid Sans", Ubuntu, Verdana, sans-serif
+    font-family: $sans
     font-size: 1.6rem
     line-height: 120%
     min-height: 100%
     margin: 0
     display: flex
     flex-flow: column nowrap
+
+p
+    line-height: 150%
 
 a
     color: $accent
@@ -181,7 +186,7 @@ iframe
         height: 56.26vw
         max-height: 95vh
 
-    .video-info
+    .video-info-line
         display: flex
         flex-flow: row wrap
         margin: $spacing $spacing / 2
@@ -198,6 +203,12 @@ iframe
 
             & > span
                 margin: 0 $spacing / 2
+
+    .description
+        background: $inputs
+        border-radius: 5px
+        margin: 0 $spacing
+        padding: $spacing
 
 .related-frame
     width: 100%
@@ -224,7 +235,7 @@ iframe
         .video-column
             margin: 0 $spacing
 
-            .video-info
+            .video-info-line
                 margin-left: 0
                 margin-right: 0
 
@@ -233,6 +244,9 @@ iframe
 
                 .video-details span:last-child
                     margin-right: 0
+
+            .description
+                margin: 0
 
         .related-frame
             margin: 0

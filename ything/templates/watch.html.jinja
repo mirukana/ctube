@@ -17,7 +17,7 @@
                 allowfullscreen
             ></iframe>
 
-            <div class="video-info">
+            <div class="video-info-line">
                 <span class="title">{{ title }}</span>
                 <div class="video-details">
                     <span><span class="icon">👤</span> {{ uploader }}</span>
@@ -27,6 +27,8 @@
                     <span><span class="icon bad">👎</span> {{dislikes}}</span>
                 </div>
             </div>
+
+            <p class="description">{{ html_description|safe }}</p>
         </div>
 
         <iframe
