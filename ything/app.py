@@ -60,6 +60,17 @@ async def results(
     return TEMPLATES.TemplateResponse("results.html.jinja", params)
 
 
+@APP.get("/search", response_class=HTMLResponse)
+async def search(
+    request:    Request,
+    q:          str,
+    page:       int           = 1,
+    exclude_id: Optional[str] = None,
+    embedded:   bool          = False,
+):
+    return await results(request, q, page, exclude_id, embedded)
+
+
 @APP.get("/preview", response_class=HTMLResponse)
 async def preview(request: Request, video_id: str):
     info   = await video_info(video_id)
