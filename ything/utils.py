@@ -7,6 +7,8 @@ from functools import partial
 from typing import Any, Dict, List
 from urllib.parse import urlencode
 
+from autolink import linkify
+
 from .downloader import Downloader
 
 POOL = ThreadPoolExecutor(max_workers=16)
@@ -28,7 +30,7 @@ async def video_info(video_id: str) -> Dict[str, Any]:
         "human_date":       format_date(info["upload_date"] or "?"),
         "likes":            format_thousands(info["like_count"] or 0),
         "dislikes":         format_thousands(info["dislike_count"] or 0),
-        "html_description": plain2html(info["description"] or ""),
+        "html_description": linkify(plain2html(info["description"] or "")),
     })
 
     return info
