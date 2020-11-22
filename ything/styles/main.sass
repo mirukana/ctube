@@ -45,24 +45,23 @@ a
 nav
     max-width: 100%
     margin: $spacing
-    display: flex
-    flex-flow: row nowrap
-    justify-content: center
-    align-content: stretch
-    align-items: stretch
 
-    button.previous[value=""], button.next[value=""]
-        display: none
+    form
+        display: flex
+        flex-flow: row nowrap
+        justify-content: center
 
-    input[type="search"]
-        width: 100%
-        padding: $spacing / 2 + 2 $spacing
-
-        &::-webkit-search-decoration,
-        &::-webkit-search-cancel-button,
-        &::-webkit-search-results-button,
-        &::-webkit-search-results-decoration
+        button[value=""]
             display: none
+
+        input[type="search"]
+            padding: $spacing / 2 + 2 $spacing
+
+            &::-webkit-search-decoration,
+            &::-webkit-search-cancel-button,
+            &::-webkit-search-results-button,
+            &::-webkit-search-results-decoration
+                display: none
 
 .page-num
     padding: $spacing / 2 $spacing
@@ -184,6 +183,9 @@ iframe
 @media all and (max-width: $preview_hspace + $spacing * 2)
     nav
         margin-bottom: 0
+
+        input[type="search"]
+            width: 100%
 
 @media all and (min-width: 1280px)
     .watch-body
