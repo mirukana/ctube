@@ -8,6 +8,34 @@
         <link rel="stylesheet" href="static/css/main.css">
     </head>
     <body>
+        <nav data-embedded="{{embedded}}">
+            <form action="/results">
+                <input
+                    size=30
+                    type="search"
+                    name="search_query"
+                    placeholder="Search"
+                    value="{{ search_query }}"
+                    autocomplete=true
+                    {% if not embedded %}
+                        autofocus=true
+                    {% endif %}
+                >
+            </form>
+
+            <button type="submit" name="page" value="{{ prev_page }}">
+                <a class="qutebrowser" href="{{ prev_url }}">Previous</a>🡠
+            </button>
+
+            <span class="page-num" data-num="{{ page_num }}">
+                {{ page_num }}
+            </span>
+
+            <button type="submit" name="page" value="{{ next_page }}">
+                <a class="qutebrowser" href="{{ next_url }}">Next</a>🡢
+            </button>
+        </nav>
+
         <div class="thumb-grid">
             {% for entry in entries %}
                 <div class="thumb-wrapper">
@@ -36,7 +64,5 @@
                 </div>
             {% endfor %}
         </div>
-
-        {% include "navbar.html.jinja" %}
     </body>
 </html>

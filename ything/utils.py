@@ -68,6 +68,7 @@ def related_url(video_info: Dict[str, Any]) -> str:
         "search_query": quote_plus(" ".join(terms)),
         "exclude_id":   video_info["id"],
         "embedded":     True,
+        "page":         1,
     })
 
     return f"/results?{params}"

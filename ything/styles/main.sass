@@ -1,8 +1,9 @@
 // vim: shiftwidth=4
 
+$spacing:         16px
+$inputs_height:   37px
 $preview_width:   256px
 $preview_height:  230px
-$spacing:         16px
 $max_row_thumbs:  4
 $thumbs_per_page: 10
 $preview_hspace:  ($preview_width + $spacing * 2)
@@ -42,17 +43,26 @@ a
         color: $accent_dark !important
 
 nav
-    position: fixed
-    bottom: 0
-    width: 100%
+    max-width: 100%
+    margin: $spacing
     display: flex
     flex-flow: row nowrap
     justify-content: center
     align-content: stretch
     align-items: stretch
 
-    &[data-embedded="True"]
+    button.previous[value=""], button.next[value=""]
         display: none
+
+    input[type="search"]
+        width: 100%
+        padding: $spacing / 2 + 2 $spacing
+
+        &::-webkit-search-decoration,
+        &::-webkit-search-cancel-button,
+        &::-webkit-search-results-button,
+        &::-webkit-search-results-decoration
+            display: none
 
 .page-num
     padding: $spacing / 2 $spacing
@@ -79,12 +89,6 @@ input, button
 
 button:hover
     background: scale-color($inputs, $lightness: +10%)
-
-button.previous[value=""], button.next[value=""]
-    display: none
-
-nav input[type="search"]
-    padding: $spacing / 2 + 2 $spacing
 
 iframe
     overflow: hidden
@@ -163,17 +167,23 @@ iframe
 .video-frame
     width: 100vw
     height: 56.26vw
-    max-height: 96.4vh
+    max-height: 100vh
+    margin-bottom: $spacing
 
 .related-frame
     width: 100%
-    margin: $spacing 0
-    height: $preview_vspace * $thumbs_per_page
+    height: $preview_vspace * $thumbs_per_page + $inputs_height + $spacing * 2
 
 @for $row_thumbs from 2 through $max_row_thumbs
     @media all and (min-width: $preview_vspace * $row_thumbs)
         .related-frame
-            height: $preview_vspace * ceil($thumbs_per_page / $row_thumbs)
+            $thumbs: ceil($thumbs_per_page / $row_thumbs)
+            height: $preview_vspace * $thumbs + $inputs_height + $spacing * 2
+
+// When thumbnail grids are one column wide
+@media all and (max-width: $preview_hspace + $spacing * 2)
+    nav
+        margin-bottom: 0
 
 @media all and (min-width: 1280px)
     .watch-body
@@ -181,5 +191,7 @@ iframe
 
         .related-frame
             margin: 0
-            width: $preview_hspace
-            height: $preview_vspace * $thumbs_per_page
+            width: $preview_hspace + $spacing * 2
+
+            $input_space: $inputs_height + $spacing
+            height: $preview_vspace * $thumbs_per_page + $input_space
