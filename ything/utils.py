@@ -4,7 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
 from functools import partial
 from typing import Any, Dict, List
-from urllib.parse import quote_plus, urlencode
+from urllib.parse import urlencode
 
 from .downloader import Downloader
 
@@ -65,7 +65,7 @@ def related_url(video_info: Dict[str, Any]) -> str:
         terms = terms[:9]
 
     params = urlencode({
-        "search_query": quote_plus(" ".join(terms)),
+        "search_query": " ".join(terms),
         "exclude_id":   video_info["id"],
         "embedded":     True,
     })
