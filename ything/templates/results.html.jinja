@@ -22,17 +22,15 @@
                     {% endif %}
                 >
 
-                <button type="submit" name="page" value="{{ prev_page }}">
-                    <a class="qutebrowser" href="{{ prev_url }}">Previous</a>🡠
-                </button>
+                <a class="qutebrowser" href="{{ prev_url }}">Previous</a>
+                <a class="button" href="{{ prev_url }}">🡠</a>
 
                 <span class="page-num" data-num="{{ page_num }}">
                     {{ page_num }}
                 </span>
 
-                <button type="submit" name="page" value="{{ next_page }}">
-                    <a class="qutebrowser" href="{{ next_url }}">Next</a>🡢
-                </button>
+                <a class="qutebrowser" href="{{ next_url }}">Next</a>
+                <a class="button" href="{{ next_url }}">🡢</a>
             </form>
         </nav>
 
