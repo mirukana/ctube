@@ -10,7 +10,13 @@
         >
     </form>
 
-    <a class="button previous" href="{{ previous_url }}">&lt;</a>
+    <button class="previous" type="submit" name="page" value="{{ prev_page }}">
+        <a class="qutebrowser" href="{{ prev_url }}">Previous</a>🡠
+    </button>
+
     <span class="page-num" data-num="{{page_num}}">{{ page_num }}</span>
-    <a class="button next" href="{{ next_url }}">&gt;</a>
+
+    <button class="next" type="submit" name="page" value="{{ next_page }}">
+        <a class="qutebrowser" href="{{ next_url }}">Next</a>🡢
+    </button>
 </nav>

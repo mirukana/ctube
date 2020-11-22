@@ -62,23 +62,26 @@ nav
     &[data-num=""]
         display: none
 
-input, .button
+input, button
     color: $text
     border: 0
     outline: 0
     background: $inputs
     padding: $spacing / 2 $spacing
-    border: 2px solid transparent
-    transition: border-color $anim_time
+    border: 1px solid $inputs
+    transition: border-color $anim_time, background $anim_time
 
     &:focus
         border-bottom: 1px solid $accent_dark
 
-.button.next, .button.previous
-    font-size: 1.8rem
-
-    &[href=""]
+    .qutebrowser
         display: none
+
+button:hover
+    background: scale-color($inputs, $lightness: +10%)
+
+button.previous[value=""], button.next[value=""]
+    display: none
 
 nav input[type="search"]
     padding: $spacing / 2 + 2 $spacing

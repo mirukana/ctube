@@ -50,7 +50,7 @@ async def results(
             "human_views":    format_thousands(entry["view_count"] or 0),
         })
 
-    previous = \
+    prev_url = \
         request.url.include_query_params(page=page - 1) if page > 1 else ""
 
     params = {
@@ -58,7 +58,9 @@ async def results(
         "search_query": search_query,
         "entries":      entries,
         "page_num":     page,
-        "previous_url": previous,
+        "prev_page":    page - 1 if page > 1 else "",
+        "prev_url":     prev_url,
+        "next_page":    page + 1,
         "next_url":     request.url.include_query_params(page = page + 1),
         "embedded":     embedded,
     }
