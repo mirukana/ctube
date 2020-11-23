@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
 from functools import partial
 from typing import Any, Dict, List
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse
 
 from autolink import linkify
 
@@ -25,6 +25,7 @@ async def video_info(video_id: str) -> Dict[str, Any]:
         "small_thumbnail":  fitting_thumbnail(info["thumbnails"], 256),
         "watch_url":        "/watch?v=%s" % info["id"],
         "related_url":      related_url(info),
+        "channel_url":      urlparse(info["channel_url"]).path,
         "human_duration":   format_duration(info["duration"] or 0),
         "human_views":      format_thousands(info["view_count"] or 0),
         "human_date":       format_date(info["upload_date"] or "?"),

@@ -21,21 +21,20 @@ async def home(request: Request):
     return TEMPLATES.TemplateResponse("results.html.jinja", params)
 
 
-@APP.get("/results", response_class=HTMLResponse)
-async def results(
+async def entries(
     request:      Request,
+    page_title:   str,
     search_query: str,
+    ytdl_query:   str,
     page:         int           = 1,
     exclude_id:   Optional[str] = None,
     embedded:     bool          = False,
 ):
-
-    if not search_query:
+    if not ytdl_query:
         return await home(request)
 
     wanted  = 10 * page
-    total   = wanted + (1 if exclude_id else 0)
-    entries = YTDL.extract_info(f"ytsearch{total}:{search_query}")["entries"]
+    entries = YTDL.extract_info(ytdl_query)["entries"]
     entries = [e for e in entries if not exclude_id or e["id"] != exclude_id]
     entries = entries[wanted - 10:wanted]
 
@@ -52,6 +51,7 @@ async def results(
 
     params = {
         "request":      request,
+        "page_title":   page_title,
         "search_query": search_query,
         "entries":      entries,
         "page_num":     page,
@@ -60,6 +60,29 @@ async def results(
         "embedded":     embedded,
     }
     return TEMPLATES.TemplateResponse("results.html.jinja", params)
+
+
+@APP.get("/results", response_class=HTMLResponse)
+async def results(
+    request:      Request,
+    search_query: str,
+    page:         int           = 1,
+    exclude_id:   Optional[str] = None,
+    embedded:     bool          = False,
+):
+
+    wanted  = 10 * page
+    total   = wanted + (1 if exclude_id else 0)
+
+    return await entries(
+        request,
+        search_query,
+        search_query,
+        f"ytsearch{total}:{search_query}",
+        page,
+        exclude_id,
+        embedded,
+    )
 
 
 @APP.get("/search", response_class=HTMLResponse)
@@ -71,6 +94,26 @@ async def search(
     embedded:   bool          = False,
 ):
     return await results(request, q, page, exclude_id, embedded)
+
+
+
+@APP.get("/channel/{channel_id}", response_class=HTMLResponse)
+@APP.get("/channel/{channel_id}/videos", response_class=HTMLResponse)
+@APP.get("/user/{channel_id}", response_class=HTMLResponse)
+@APP.get("/user/{channel_id}/videos", response_class=HTMLResponse)
+async def channel(
+    request:    Request,
+    channel_id: str,
+    page:       int           = 1,
+    exclude_id: Optional[str] = None,
+    embedded:   bool          = False,
+):
+    kind = "channel" if "/channel/" in str(request.url) else "user"
+    url  = f"https://youtube.com/{kind}/{channel_id}/videos"
+
+    return await entries(
+        request, channel_id, "", url, page, exclude_id, embedded,
+    )
 
 
 @APP.get("/preview", response_class=HTMLResponse)

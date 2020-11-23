@@ -12,8 +12,8 @@ $preview_vspace:  ($preview_height + $spacing * 2)
 $background: hsl(240, 27%, 14%)
 $inputs: hsl(240, 22%, 5%)
 $text: hsl(0, 0, 70%)
+$accent_light: hsl(165, 30%, 70%)
 $accent: hsl(165, 50%, 50%)
-$accent_dark: hsl(165, 50%, 30%)
 $accent_good: hsl(140, 50%, 50%)
 $accent_bad: hsl(345, 50%, 50%)
 
@@ -43,12 +43,12 @@ p
         display: none
 
 a
-    color: $accent
+    color: $accent_light
     text-decoration: none
     transition: color $anim_time
 
     &:hover
-        color: $accent_dark !important
+        color: $accent !important
 
 nav
     max-width: 100%
@@ -97,7 +97,7 @@ input, .button
     transition: border-color $anim_time, background $anim_time
 
     &:focus
-        border-bottom: 1px solid $accent_dark
+        border-bottom: 1px solid $accent
 
 .button:hover
     background: scale-color($inputs, $lightness: +5%)

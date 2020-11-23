@@ -5,7 +5,7 @@
         <meta charset="utf-8">
         <meta name="viewport"
               content="width=device-width, initial-scale=1, maximum-scale=1">
-        <link rel="stylesheet" href="static/css/main.css">
+        <link rel="stylesheet" href="/static/css/main.css">
     </head>
     <body class="watch-body">
         <div class="video-column">
@@ -20,7 +20,9 @@
             <div class="video-info-line">
                 <span class="title">{{ title }}</span>
                 <div class="video-details">
-                    <span><span class="icon">👤</span> {{ uploader }}</span>
+                    <span><span class="icon">👤 </span>
+                        <a href="{{ channel_url }}">{{ uploader }}</a>
+                    </span>
                     <span><span class="icon">🠝</span> {{ human_date }}</span>
                     <span><span class="icon">⦿</span> {{ human_views }}</span>
                     <span><span class="icon good">👍</span> {{ likes }}</span>
