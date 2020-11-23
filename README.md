@@ -18,7 +18,7 @@ scripts (e.g. qutebrowser), you can use something like this:
 // @name         Youtube Cleaner
 // @namespace    youtube_cleaner
 // @version      0.1
-// @match        *://www.youtube.com/*
+// @match        *://www.youtube-nocookie.com/*
 // @run-at       document-end
 // ==/UserScript==
 
