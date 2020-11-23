@@ -17,6 +17,13 @@ class CachedRequest(NamedTuple):
 class Downloader(YoutubeDL):
     _cache: Dict[CachedRequest, addinfourl] = OrderedDict()
 
+
+    def __init__(self, **params) -> None:
+        ytdl_params = {"extract_flat": "in_playlist"}
+        ytdl_params.update(params)
+        super().__init__(ytdl_params)
+
+
     def urlopen(self, req: Union[Request, str]) -> addinfourl:
         """Wrapper of `urlopen()` that caches Youtube requests."""
 

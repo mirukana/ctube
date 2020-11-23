@@ -12,7 +12,7 @@ from autolink import linkify
 from .downloader import Downloader
 
 POOL = ThreadPoolExecutor(max_workers=16)
-YTDL = Downloader({"extract_flat": "in_playlist"})
+YTDL = Downloader()
 
 pool_run = partial(asyncio.get_event_loop().run_in_executor, POOL)
 

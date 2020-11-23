@@ -6,6 +6,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from .downloader import Downloader
 from .utils import YTDL, format_duration, format_thousands, video_info
 
 APP       = FastAPI()
@@ -29,12 +30,13 @@ async def entries(
     page:         int           = 1,
     exclude_id:   Optional[str] = None,
     embedded:     bool          = False,
+    downloader:   Downloader    = YTDL,
 ):
     if not ytdl_query:
         return await home(request)
 
     wanted  = 10 * page
-    entries = YTDL.extract_info(ytdl_query)["entries"]
+    entries = downloader.extract_info(ytdl_query)["entries"]
     entries = [e for e in entries if not exclude_id or e["id"] != exclude_id]
     entries = entries[wanted - 10:wanted]
 
@@ -108,11 +110,12 @@ async def channel(
     exclude_id: Optional[str] = None,
     embedded:   bool          = False,
 ):
-    kind = "channel" if "/channel/" in str(request.url) else "user"
-    url  = f"https://youtube.com/{kind}/{channel_id}/videos"
+    kind       = "channel" if "/channel/" in str(request.url) else "user"
+    url        = f"https://youtube.com/{kind}/{channel_id}/videos"
+    downloader = Downloader(playlistend=page * 10)
 
     return await entries(
-        request, channel_id, "", url, page, exclude_id, embedded,
+        request, channel_id, "", url, page, exclude_id, embedded, downloader,
     )
 
 
