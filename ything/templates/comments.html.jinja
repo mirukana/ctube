@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="/static/css/main.css">
+    </head>
+    <body>
+        <div class="comment-list">
+
+            {% for comment in comments %}
+                {% if "." in comment.cid %}
+                    <div class="comment box reply">
+                {% else %}
+                    <div class="comment box">
+                {% endif %}
+
+                    <img src="{{ comment.photo }}" width=48 height=48>
+
+                    <div class="comment-texts">
+
+                        <p>{{ comment.html_text|safe }}</p>
+
+                        <div class="comment-details">
+                            <span>
+                                <span class="icon">👤 </span>
+                                <a href="{{ comment.channel_url }}">
+                                    {{ comment.author }}
+                                </a>
+                            </span>
+
+                            <span>
+                                <span class="icon">🠝 </span>
+                                {{ comment.time }}
+                            </span>
+
+                            <span>
+                                <span class="icon good">👍 </span>
+                                {{ comment.votes }}
+                            </span>
+
+                            {% if comment.heart %}
+                                <span
+                                    class="icon heart"
+                                    title="Uploader liked this"
+                                >♥</span>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+    </body>
+</html>

@@ -1,13 +1,16 @@
 from pathlib import Path
 from typing import Optional
 
+from autolink import linkify
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from .downloader import Downloader
-from .utils import YTDL, format_duration, format_thousands, video_info
+from .utils import (
+    DOWNLOADER, format_duration, format_thousands, plain2html, video_info,
+)
 
 APP       = FastAPI()
 CWD       = Path(__file__).parent
@@ -30,7 +33,7 @@ async def entries(
     page:         int           = 1,
     exclude_id:   Optional[str] = None,
     embedded:     bool          = False,
-    downloader:   Downloader    = YTDL,
+    downloader:   Downloader    = DOWNLOADER,
 ):
     if not ytdl_query:
         return await home(request)
@@ -132,3 +135,18 @@ async def watch(request: Request, v: str):
     info     = await video_info(video_id)
     params   = {**info, "request": request}
     return TEMPLATES.TemplateResponse("watch.html.jinja", params)
+
+
+@APP.get("/comments", response_class=HTMLResponse)
+async def comments(request: Request, video_id: str, page: int = 1):
+    comments = await DOWNLOADER.comments(video_id, page)
+
+    for i, comment in enumerate(comments):
+        comments[i].update({
+            "is_reply":    "." in comment["cid"],
+            "html_text":   linkify(plain2html(comment["text"])),
+            "channel_url": "/channel/%s" % comment["channel"],
+        })
+
+    params   = {"request": request, "comments": comments}
+    return TEMPLATES.TemplateResponse("comments.html.jinja", params)

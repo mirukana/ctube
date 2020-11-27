@@ -1,0 +1,3 @@
+[submodule "ything/youtube_comment_downloader"]
+	path = ything/youtube_comment_downloader
+	url = https://github.com/egbertbouman/youtube-comment-downloader

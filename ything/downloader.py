@@ -1,11 +1,18 @@
 import json
 from collections import OrderedDict
-from typing import Dict, NamedTuple, Optional, Union
+from typing import (
+    Any, Dict, Generator, List, NamedTuple, Optional, Tuple, Union,
+)
 from urllib.request import Request
 from urllib.response import addinfourl
 
 from youtube_dl import YoutubeDL
 
+from .youtube_comment_downloader.downloader import download_comments
+
+Comment     = Dict[str, Any]
+CommentPage = List[Comment]
+CommentGen  = Generator[Comment, None, None]
 
 class CachedRequest(NamedTuple):
     method:       str
@@ -15,7 +22,9 @@ class CachedRequest(NamedTuple):
 
 
 class Downloader(YoutubeDL):
-    _cache: Dict[CachedRequest, addinfourl] = OrderedDict()
+    _request_cache: Dict[CachedRequest, addinfourl]    = OrderedDict()
+    _comment_pages: Dict[Tuple[str, int], CommentPage] = {}
+    _comment_gens:  Dict[str, Tuple[CommentGen, int]]  = {}
 
 
     def __init__(self, **params) -> None:
@@ -37,16 +46,45 @@ class Downloader(YoutubeDL):
                 json.dumps(req.headers),
             )
 
-        if cached_req in self._cache:
-            response = self._cache[cached_req]
+        if cached_req in self._request_cache:
+            response = self._request_cache[cached_req]
             response.seek(0)
             return response
 
         response = super().urlopen(req)
 
-        if len(self._cache) >= 4096:
-            oldest = list(self._cache.keys())[0]
-            del self._cache[oldest]
+        if len(self._request_cache) >= 4096:
+            oldest = list(self._request_cache.keys())[0]
+            del self._request_cache[oldest]
 
-        self._cache[cached_req] = response
+        self._request_cache[cached_req] = response
         return response
+
+
+    async def comments(self, video_id: str, page: int = 1) -> CommentPage:
+        if (video_id, page) in self._comment_pages:
+            return self._comment_pages[video_id, page]
+
+        default            = (download_comments(video_id, sleep=0), 0)
+        gen, yielded_pages = self._comment_gens.setdefault(video_id, default)
+
+        if yielded_pages >= page:
+            gen, yielded_pages = default
+
+        comments = []
+
+        for _ in range(20):
+            try:
+                comments.append(next(gen))
+            except StopIteration:
+                break
+
+        self._comment_gens[video_id] = (gen, yielded_pages + 1)
+
+        if len(self._comment_pages) >= 256:
+            oldest = list(self._comment_pages.keys())[0]
+            del self._comment_pages[oldest]
+
+        self._comment_pages[video_id, page] = comments
+
+        return comments

@@ -11,20 +11,21 @@ from autolink import linkify
 
 from .downloader import Downloader
 
-POOL = ThreadPoolExecutor(max_workers=16)
-YTDL = Downloader()
+POOL       = ThreadPoolExecutor(max_workers=16)
+DOWNLOADER = Downloader()
 
 pool_run = partial(asyncio.get_event_loop().run_in_executor, POOL)
 
 
 async def video_info(video_id: str) -> Dict[str, Any]:
-    get_info   = partial(YTDL.extract_info, download=False)
+    get_info   = partial(DOWNLOADER.extract_info, download=False)
     info: dict = await pool_run(get_info, video_id)  # type: ignore
 
     info.update({
         "small_thumbnail":  fitting_thumbnail(info["thumbnails"], 256),
         "watch_url":        "/watch?v=%s" % info["id"],
         "related_url":      related_url(info),
+        "comments_url":     "/comments?video_id=%s" % info["id"],
         "channel_url":      urlparse(info["channel_url"]).path,
         "human_duration":   format_duration(info["duration"] or 0),
         "human_views":      format_thousands(info["view_count"] or 0),

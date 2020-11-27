@@ -14,7 +14,7 @@ $inputs: hsl(240, 22%, 5%)
 $text: hsl(0, 0, 70%)
 $accent_light: hsl(165, 30%, 70%)
 $accent: hsl(165, 50%, 50%)
-$accent_good: hsl(140, 50%, 50%)
+$accent_good: hsl(145, 50%, 50%)
 $accent_bad: hsl(345, 50%, 50%)
 
 $sans: Roboto, "Noto Sans", "Droid Sans", Ubuntu, Verdana, sans-serif
@@ -38,6 +38,7 @@ body
 
 p
     line-height: 150%
+    overflow-wrap: break-word  // prevent long links from overflowing
 
     &:empty
         display: none
@@ -173,8 +174,14 @@ iframe
     &.good
         text-shadow: 0 0 0 $accent_good
 
-    &.bad
+    &.bad, &.heart
         text-shadow: 0 0 0 $accent_bad
+
+.box
+    background: $inputs
+    border-radius: 5px
+    margin: 0 $spacing
+    padding: $spacing
 
 .watch-body
     width: 100%
@@ -193,7 +200,7 @@ iframe
         display: flex
         flex-flow: row wrap
         margin: $spacing $spacing / 2
-        margin-bottom: $spacing / 2
+        margin-bottom: 0
         line-height: 150%
 
         .title
@@ -208,10 +215,7 @@ iframe
                 margin: 0 $spacing / 2
 
     .description
-        background: $inputs
-        border-radius: 5px
-        margin: 0 $spacing
-        padding: $spacing
+        margin: $spacing / 2 $spacing
 
 .related-frame
     width: 100%
@@ -223,6 +227,53 @@ iframe
             $thumbs: ceil($thumbs_per_page / $row_thumbs)
             height: $preview_vspace * $thumbs + $inputs_height + $spacing * 2
 
+.comments-frame
+    width: 94.5%
+    height: 10000px
+    margin: 0 $spacing
+
+    &.widescreen
+        display: none
+
+.comment-list
+    display: flex
+    flex-flow: column nowrap
+    align-items: flex-start
+
+    .comment
+        display: flex
+        flex-flow: row nowrap
+        margin: $spacing / 2 0
+        background: hsl(240, 24%, 9%)
+
+        &.reply
+            margin-left: $spacing * 4
+
+        img
+            min-width: 4.8rem
+            min-height: 4.8rem
+
+        .comment-texts
+            margin-left: $spacing
+
+            .author
+                font-weight: 500
+
+            p
+                max-width: 64rem
+                margin: 0
+                margin-bottom: $spacing / 4
+
+            .comment-details
+                & > span
+                    margin: 0 $spacing / 4
+
+                & > span:first-child
+                    margin-left: 0
+
+                & > span:last-child
+                    margin-right: 0
+
 // When thumbnail grids are one column wide
 @media all and (max-width: $preview_hspace + $spacing * 2)
     nav
@@ -231,12 +282,13 @@ iframe
         input[type="search"]
             width: 100%
 
-@media all and (min-width: 1280px)
+@media all and (min-width: 960px)
     .watch-body
         flex-flow: row nowrap
 
         .video-column
-            margin: 0 $spacing
+            margin: $spacing
+            margin-right: 0
 
             .video-info-line
                 margin-left: 0
@@ -248,8 +300,8 @@ iframe
                 .video-details span:last-child
                     margin-right: 0
 
-            .description
-                margin: 0
+        .description
+            margin: $spacing / 2 0
 
         .related-frame
             margin: 0
@@ -257,3 +309,13 @@ iframe
 
             $input_space: $inputs_height + $spacing
             height: $preview_vspace * $thumbs_per_page + $input_space
+
+        .comments-frame
+            width: 100%
+            margin: 0
+
+            &.widescreen
+                display: block
+
+            &.thinscreen
+                display: none

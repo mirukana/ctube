@@ -30,7 +30,14 @@
                 </div>
             </div>
 
-            <p class="description">{{ html_description|safe }}</p>
+            <p class="description box">{{ html_description|safe }}</p>
+
+            <iframe
+                class="comments-frame widescreen"
+                src="{{ comments_url }}"
+                scrolling="no"
+                loading="lazy"
+            ></iframe>
         </div>
 
         <iframe
@@ -38,7 +45,13 @@
             src="{{ related_url }}"
             scrolling="no"
             loading="lazy"
-            data-entries="{{ entries }}"
+        ></iframe>
+
+        <iframe
+            class="comments-frame thinscreen"
+            src="{{ comments_url }}"
+            scrolling="no"
+            loading="lazy"
         ></iframe>
     </body>
 </html>
