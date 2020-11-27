@@ -7,7 +7,33 @@
               content="width=device-width, initial-scale=1, maximum-scale=1">
         <link rel="stylesheet" href="/static/css/main.css">
     </head>
+
     <body class="watch-body">
+        <script type="application/javascript">
+            function resizeCommentFrame(frame, canScroll=false) {
+                console.log(frame)
+                const doc  = document
+                const list =
+                    frame.contentWindow.document.getElementById("comment-list")
+
+                if (! list.scrollHeight) return
+
+                frame.style.height = list.scrollHeight + "px"
+
+                const pos = doc.documentElement.scrollTop || doc.body.scrollTop
+
+                if (canScroll && pos > frame.offsetTop)
+                    frame.scrollIntoView({behavior: "smooth"})
+            }
+
+            window.onresize = () => {
+                console.log("rr")
+                const doc = document
+                resizeCommentFrame(doc.getElementById("thin-comments-frame"))
+                resizeCommentFrame(doc.getElementById("wide-comments-frame"))
+            }
+        </script>
+
         <div class="video-column">
             <iframe
                 class="video-frame"
@@ -33,10 +59,12 @@
             <p class="description box">{{ html_description|safe }}</p>
 
             <iframe
+                id="wide-comments-frame"
                 class="comments-frame widescreen"
                 src="{{ comments_url }}"
                 scrolling="no"
                 loading="lazy"
+                onLoad="resizeCommentFrame(this, true)"
             ></iframe>
         </div>
 
@@ -48,10 +76,12 @@
         ></iframe>
 
         <iframe
+            id="thin-comments-frame"
             class="comments-frame thinscreen"
             src="{{ comments_url }}"
             scrolling="no"
             loading="lazy"
+            onLoad="resizeCommentFrame(this, true)"
         ></iframe>
     </body>
 </html>
