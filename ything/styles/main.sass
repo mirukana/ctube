@@ -51,42 +51,43 @@ a
     &:hover
         color: $accent !important
 
+.nav-row
+    display: flex
+    flex-flow: row nowrap
+    justify-content: center
+    width: 100%
+
 nav
     max-width: 100%
     margin: $spacing
 
-    form
-        display: flex
-        flex-flow: row nowrap
-        justify-content: center
+    .button[href=""]
+        display: none
 
-        .button[href=""]
+    .qutebrowser
+        display: none
+
+    .page-num
+        padding: $spacing / 2 $spacing
+        background: $inputs
+        opacity: 0.8
+
+    input
+        padding: $spacing / 2 + 2 $spacing
+
+        &[type="number"]
+            max-width: 25px
+            padding-left: 0
+            padding-right: 0
+            text-align: center
+
+        &::-webkit-search-decoration,
+        &::-webkit-search-cancel-button,
+        &::-webkit-search-results-button,
+        &::-webkit-search-results-decoration,
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button
             display: none
-
-        .qutebrowser
-            display: none
-
-        .page-num
-            padding: $spacing / 2 $spacing
-            background: $inputs
-            opacity: 0.8
-
-        input
-            padding: $spacing / 2 + 2 $spacing
-
-            &[type="number"]
-                max-width: 25px
-                padding-left: 0
-                padding-right: 0
-                text-align: center
-
-            &::-webkit-search-decoration,
-            &::-webkit-search-cancel-button,
-            &::-webkit-search-results-button,
-            &::-webkit-search-results-decoration,
-            &::-webkit-outer-spin-button,
-            &::-webkit-inner-spin-button
-                display: none
 
 input, .button
     color: $text

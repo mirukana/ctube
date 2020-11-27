@@ -50,6 +50,17 @@
                 </div>
             {% endfor %}
 
+            <nav class="nav-row">
+                <a class="qutebrowser" href="{{ prev_url }}">Previous</a>
+                <a class="button" href="{{ prev_url }}">🡠</a>
+
+                <span class="page-num" data-num="{{ page_num }}">
+                    {{ page_num }}
+                </span>
+
+                <a class="qutebrowser" href="{{ next_url }}">Next</a>
+                <a class="button" href="{{ next_url }}">🡢</a>
+            </nav>
         </div>
     </body>
 </html>

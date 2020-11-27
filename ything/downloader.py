@@ -10,9 +10,9 @@ from youtube_dl import YoutubeDL
 
 from .youtube_comment_downloader.downloader import download_comments
 
-Comment     = Dict[str, Any]
-CommentPage = List[Comment]
-CommentGen  = Generator[Comment, None, None]
+Comment        = Dict[str, Any]
+CommentsResult = Tuple[List[Comment], bool]  # bool = reached last comment
+CommentGen     = Generator[Comment, None, None]
 
 class CachedRequest(NamedTuple):
     method:       str
@@ -22,9 +22,9 @@ class CachedRequest(NamedTuple):
 
 
 class Downloader(YoutubeDL):
-    _request_cache: Dict[CachedRequest, addinfourl]    = OrderedDict()
-    _comment_pages: Dict[Tuple[str, int], CommentPage] = {}
-    _comment_gens:  Dict[str, Tuple[CommentGen, int]]  = {}
+    _request_cache: Dict[CachedRequest, addinfourl]       = OrderedDict()
+    _comment_pages: Dict[Tuple[str, int], CommentsResult] = {}
+    _comment_gens:  Dict[str, Tuple[CommentGen, int]]     = {}
 
 
     def __init__(self, **params) -> None:
@@ -61,7 +61,7 @@ class Downloader(YoutubeDL):
         return response
 
 
-    async def comments(self, video_id: str, page: int = 1) -> CommentPage:
+    async def comments(self, video_id: str, page: int = 1) -> CommentsResult:
         if (video_id, page) in self._comment_pages:
             return self._comment_pages[video_id, page]
 
@@ -71,12 +71,14 @@ class Downloader(YoutubeDL):
         if yielded_pages >= page:
             gen, yielded_pages = default
 
-        comments = []
+        comments    = []
+        reached_end = False
 
         for _ in range(20):
             try:
                 comments.append(next(gen))
             except StopIteration:
+                reached_end = True
                 break
 
         self._comment_gens[video_id] = (gen, yielded_pages + 1)
@@ -85,6 +87,6 @@ class Downloader(YoutubeDL):
             oldest = list(self._comment_pages.keys())[0]
             del self._comment_pages[oldest]
 
-        self._comment_pages[video_id, page] = comments
+        self._comment_pages[video_id, page] = (comments, reached_end)
 
-        return comments
+        return (comments, reached_end)

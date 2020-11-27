@@ -139,7 +139,7 @@ async def watch(request: Request, v: str):
 
 @APP.get("/comments", response_class=HTMLResponse)
 async def comments(request: Request, video_id: str, page: int = 1):
-    comments = await DOWNLOADER.comments(video_id, page)
+    comments, reached_end = await DOWNLOADER.comments(video_id, page)
 
     for i, comment in enumerate(comments):
         comments[i].update({
@@ -148,5 +148,18 @@ async def comments(request: Request, video_id: str, page: int = 1):
             "channel_url": "/channel/%s" % comment["channel"],
         })
 
-    params   = {"request": request, "comments": comments}
+    prev_url = \
+        request.url.include_query_params(page=page - 1) if page > 1 else ""
+
+    next_url = \
+        "" if reached_end else request.url.include_query_params(page=page + 1)
+
+    params = {
+        "request":  request,
+        "comments": comments,
+        "page_num": page,
+        "prev_url": prev_url,
+        "next_url": next_url,
+    }
+
     return TEMPLATES.TemplateResponse("comments.html.jinja", params)
