@@ -62,7 +62,7 @@ nav
     margin: $spacing
 
     .button[href=""]
-        display: none
+        opacity: 0.5
 
     .qutebrowser
         display: none
@@ -309,7 +309,7 @@ iframe
             width: $preview_hspace
 
             $input_space: $inputs_height + $spacing
-            height: $preview_vspace * $thumbs_per_page + $input_space
+            height: $preview_vspace * $thumbs_per_page + $input_space * 2
 
         .comments-frame
             width: 100%

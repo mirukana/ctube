@@ -11,7 +11,7 @@
         <nav data-embedded="{{ embedded }}">
             <form action="/results" class="nav-row">
                 <input
-                    size=30
+                    size=50
                     type="search"
                     name="search_query"
                     placeholder="Search"
@@ -21,16 +21,6 @@
                         autofocus=true
                     {% endif %}
                 >
-
-                <a class="qutebrowser" href="{{ prev_url }}">Previous</a>
-                <a class="button" href="{{ prev_url }}">🡠</a>
-
-                <span class="page-num" data-num="{{ page_num }}">
-                    {{ page_num }}
-                </span>
-
-                <a class="qutebrowser" href="{{ next_url }}">Next</a>
-                <a class="button" href="{{ next_url }}">🡢</a>
             </form>
         </nav>
 
@@ -62,5 +52,17 @@
                 </div>
             {% endfor %}
         </div>
+
+        <nav class="nav-row">
+            <a class="qutebrowser" href="{{ prev_url }}">Previous</a>
+            <a class="button" href="{{ prev_url }}">🡠</a>
+
+            <span class="page-num" data-num="{{ page_num }}">
+                {{ page_num }}
+            </span>
+
+            <a class="qutebrowser" href="{{ next_url }}">Next</a>
+            <a class="button" href="{{ next_url }}">🡢</a>
+        </nav>
     </body>
 </html>
