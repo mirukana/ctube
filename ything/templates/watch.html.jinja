@@ -10,10 +10,12 @@
 
     <body class="watch-body">
         <script type="application/javascript">
-            function resizeCommentFrame(frame, canScroll=false) {
-                console.log(frame)
-                const doc  = document
-                const list =
+            const doc = document
+
+            function fixFrame(frame, canScroll=false) {
+                const thinFrame = doc.getElementById("thin-comments-frame")
+                const wideFrame = doc.getElementById("wide-comments-frame")
+                const list      =
                     frame.contentWindow.document.getElementById("comment-list")
 
                 if (! list.scrollHeight) return
@@ -24,13 +26,19 @@
 
                 if (canScroll && pos > frame.offsetTop)
                     frame.scrollIntoView({behavior: "smooth"})
+
+                const current = frame.contentWindow.location.href
+
+                if (thinFrame.contentWindow.location.href != current)
+                    thinFrame.src = current
+
+                if (wideFrame.contentWindow.location.href != current)
+                    wideFrame.src = current
             }
 
             window.onresize = () => {
-                console.log("rr")
-                const doc = document
-                resizeCommentFrame(doc.getElementById("thin-comments-frame"))
-                resizeCommentFrame(doc.getElementById("wide-comments-frame"))
+                fixFrame(doc.getElementById("thin-comments-frame"))
+                fixFrame(doc.getElementById("wide-comments-frame"))
             }
         </script>
 
@@ -64,7 +72,7 @@
                 src="{{ comments_url }}"
                 scrolling="no"
                 loading="lazy"
-                onLoad="resizeCommentFrame(this, true)"
+                onLoad="fixFrame(this, true)"
             ></iframe>
         </div>
 
@@ -81,7 +89,7 @@
             src="{{ comments_url }}"
             scrolling="no"
             loading="lazy"
-            onLoad="resizeCommentFrame(this, true)"
+            onLoad="fixFrame(this, true)"
         ></iframe>
     </body>
 </html>
