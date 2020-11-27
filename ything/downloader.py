@@ -1,7 +1,9 @@
+import asyncio
 import json
 from collections import OrderedDict
 from typing import (
-    Any, Dict, Generator, List, NamedTuple, Optional, Tuple, Union,
+    Any, DefaultDict, Dict, Generator, List, NamedTuple, Optional, Tuple,
+    Union,
 )
 from urllib.request import Request
 from urllib.response import addinfourl
@@ -25,6 +27,8 @@ class Downloader(YoutubeDL):
     _request_cache: Dict[CachedRequest, addinfourl]       = OrderedDict()
     _comment_pages: Dict[Tuple[str, int], CommentsResult] = {}
     _comment_gens:  Dict[str, Tuple[CommentGen, int]]     = {}
+    _comment_locks: Dict[Tuple[str, int], asyncio.Lock]   = \
+        DefaultDict(asyncio.Lock)
 
 
     def __init__(self, **params) -> None:
@@ -65,28 +69,29 @@ class Downloader(YoutubeDL):
         if (video_id, page) in self._comment_pages:
             return self._comment_pages[video_id, page]
 
-        default            = (download_comments(video_id, sleep=0), 0)
-        gen, yielded_pages = self._comment_gens.setdefault(video_id, default)
+        async with self._comment_locks[video_id, page]:
+            default          = (download_comments(video_id, sleep=0), 0)
+            gen, yield_pages = self._comment_gens.setdefault(video_id, default)
 
-        if yielded_pages >= page:
-            gen, yielded_pages = default
+            if yield_pages >= page:
+                gen, yield_pages = default
 
-        comments    = []
-        reached_end = False
+            comments    = []
+            reached_end = False
 
-        for _ in range(20):
-            try:
-                comments.append(next(gen))
-            except StopIteration:
-                reached_end = True
-                break
+            for _ in range(20):
+                try:
+                    comments.append(next(gen))
+                except StopIteration:
+                    reached_end = True
+                    break
 
-        self._comment_gens[video_id] = (gen, yielded_pages + 1)
+            self._comment_gens[video_id] = (gen, yield_pages + 1)
 
-        if len(self._comment_pages) >= 256:
-            oldest = list(self._comment_pages.keys())[0]
-            del self._comment_pages[oldest]
+            if len(self._comment_pages) >= 256:
+                oldest = list(self._comment_pages.keys())[0]
+                del self._comment_pages[oldest]
 
-        self._comment_pages[video_id, page] = (comments, reached_end)
+            self._comment_pages[video_id, page] = (comments, reached_end)
 
-        return (comments, reached_end)
+            return (comments, reached_end)
