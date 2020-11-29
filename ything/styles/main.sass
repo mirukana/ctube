@@ -194,10 +194,8 @@ iframe
     flex-flow: column nowrap
     width: 100%
 
-    .video-frame
-        width: 100%
-        height: 56.26vw
-        max-height: 95vh
+    .video-wrapper
+        max-height: 94vh
 
     .video-info-line
         display: flex
@@ -322,3 +320,23 @@ iframe
 
             &.thinscreen
                 display: none
+
+[style*="--aspect-ratio"]
+    position: relative
+
+    & > :first-child
+        width: 100%
+
+    & > img
+        height: auto
+
+    &::before
+        content: ""
+        display: block
+        padding-bottom: calc(100% / (var(--aspect-ratio)))
+
+    & > :first-child
+        position: absolute
+        top: 0
+        left: 0
+        height: 100%
