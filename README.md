@@ -2,10 +2,11 @@
 
 ## Installation
 
-1. Install these packages on your system: `python3-pip entr sassc`
-2. Install the python requirements: `pip3 install --user -Ur requirements.txt`
-3. `./run.sh`
-4. Visit some youtube-like URLs, e.g. <http://localhost:8000/results?search_query=example+search>
+1. Clone the submodules: `git submodule update --init ything`
+2. Install these packages on your system: `python3-pip entr sassc`
+3. Install the python requirements: `pip3 install --user -Ur requirements.txt`
+4. `./run.sh`
+5. Visit some youtube-like URLs, e.g. <http://localhost:8000/results?search_query=example+search>
 
 ## Blocking ads
 

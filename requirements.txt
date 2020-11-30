@@ -4,3 +4,8 @@ jinja2      >= 2.11.2, < 3
 uvicorn     >= 0.12.2, < 0.13
 autolink    >= 0.1.2,  < 0.2
 youtube_dl  >= 2020
+
+# youtube_comment_downloader
+requests  >= 2.22.0, <= 3
+lxml      >= 4.2.5,  <= 5
+cssselect >= 1.1.0,  <= 2
