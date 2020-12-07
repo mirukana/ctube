@@ -42,7 +42,7 @@ async def video_info(video_id: str) -> Dict[str, Any]:
 
 def fitting_thumbnail(thumbnails: List[Dict[str, Any]], for_width: int) -> str:
     if not thumbnails:
-        return "static/images/no_thumbnail.png"
+        return "/static/images/no_thumbnail.png"
 
     ascending_width = sorted(thumbnails, key=lambda t: t["width"])
 
