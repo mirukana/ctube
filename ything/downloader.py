@@ -57,7 +57,7 @@ class Downloader(YoutubeDL):
 
         response = super().urlopen(req)
 
-        if len(self._request_cache) >= 4096:
+        if len(self._request_cache) >= 1024:
             oldest = list(self._request_cache.keys())[0]
             del self._request_cache[oldest]
 
