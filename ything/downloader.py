@@ -8,9 +8,8 @@ from typing import (
 from urllib.request import Request
 from urllib.response import addinfourl
 
+from youtube_comment_downloader.downloader import download_comments
 from youtube_dl import YoutubeDL
-
-from .youtube_comment_downloader.downloader import download_comments
 
 Comment        = Dict[str, Any]
 CommentsResult = Tuple[List[Comment], bool]  # bool = reached last comment
