@@ -1,4 +1,4 @@
-# HereTube
+# CTube
 
 A simple self-hosted front-end for YouTube, powered by Youtube-DL.
 
@@ -21,8 +21,8 @@ A simple self-hosted front-end for YouTube, powered by Youtube-DL.
 
 ## Installation
 
-1. Clone the repository: `git clone https://github.com/mirukana/heretube`
-2. Enter the cloned repository: `cd heretube`
+1. Clone the repository: `git clone https://github.com/mirukana/ctube`
+2. Enter the cloned repository: `cd ctube`
 2. Install `python3-pip` and `sassc` from your distro's package manager
 3. Install the python requirements: `pip3 install --user -Ur requirements.txt`
 4. Launch the server: `./run.sh`
@@ -44,7 +44,7 @@ need to be frequently kept up-to-date to fix new issues with YouTube.
 ## Stored data
 
 Recommendation system data such as last watched video dates, tag frequencies 
-and such are stored in `~/.local/share/heretube`. 
+and such are stored in `~/.local/share/ctube`. 
 
 If you make your server accessible outside of your local machine 
 (e.g. with `./run.sh --host 0.0.0.0`), be aware that any connecting client

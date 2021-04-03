@@ -72,7 +72,7 @@ async def home(request: Request, page: int  = 1, embedded: bool = False):
 
     return await entries(
         request     = request,
-        page_title  = "HereTube",
+        page_title  = "CTube",
         field_query = "",
         ytdl_query  = f"ytsearch{10 * page}:{search}",
         page        = page,
