@@ -1,5 +1,6 @@
 from pathlib import Path
-from typing import Optional
+from typing import Collection, Dict, List, Optional
+from uuid import uuid4
 
 from autolink import linkify
 from fastapi import FastAPI, Request
@@ -7,6 +8,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from .account import Account
 from .downloader import Downloader
 from .utils import (
     DOWNLOADER, format_duration, format_thousands, plain2html, video_info,
@@ -16,32 +18,31 @@ APP       = FastAPI()
 CWD       = Path(__file__).parent
 TEMPLATES = Jinja2Templates(directory=str(CWD / "templates"))
 
+LOADED_ACCOUNTS: Dict[str, Account] = {}
+
 APP.mount("/static", StaticFiles(directory=str(CWD / "static")), name="static")
 
 
-@APP.get("/", response_class=HTMLResponse)
-async def home(request: Request):
-    params = {"request": request}
-    return TEMPLATES.TemplateResponse("results.html.jinja", params)
+def get_account(request: Request) -> Account:
+    client_id = request.cookies.setdefault("client_id", str(uuid4()))
+    return LOADED_ACCOUNTS.setdefault(client_id, Account(client_id))
 
 
 async def entries(
     request:      Request,
     page_title:   str,
-    search_query: str,
+    field_query:  str,
     ytdl_query:   str,
-    page:         int           = 1,
-    exclude_id:   Optional[str] = None,
-    embedded:     bool          = False,
-    downloader:   Downloader    = DOWNLOADER,
+    page:         int             = 1,
+    result_count: int             = 10,
+    exclude_ids:  Collection[str] = (),
+    embedded:     bool            = False,
+    downloader:   Downloader      = DOWNLOADER,
 ):
-    if not ytdl_query:
-        return await home(request)
-
-    wanted  = 10 * page
+    wanted  = result_count * page
     entries = downloader.extract_info(ytdl_query)["entries"]
-    entries = [e for e in entries if not exclude_id or e["id"] != exclude_id]
-    entries = entries[wanted - 10:wanted]
+    entries = [e for e in entries if e["id"] not in exclude_ids]
+    entries = entries[wanted - result_count:wanted]
 
     for entry in entries:
         entry.update({
@@ -55,16 +56,38 @@ async def entries(
         request.url.include_query_params(page=page - 1) if page > 1 else ""
 
     params = {
-        "request":      request,
-        "page_title":   page_title,
-        "search_query": search_query,
-        "entries":      entries,
-        "page_num":     page,
-        "prev_url":     prev_url,
-        "next_url":     request.url.include_query_params(page = page + 1),
-        "embedded":     embedded,
+        "request":     request,
+        "page_title":  page_title,
+        "field_query": field_query,
+        "entries":     entries,
+        "page_num":    page,
+        "prev_url":    prev_url,
+        "next_url":    request.url.include_query_params(page = page + 1),
+        "embedded":    embedded,
     }
     return TEMPLATES.TemplateResponse("results.html.jinja", params)
+
+
+@APP.get("/", response_class=HTMLResponse)
+async def home(request: Request, page: int  = 1, embedded: bool = False):
+    account = get_account(request)
+    search  = account.recommendations_query()
+
+    if not search.strip():
+        params = {"request": request}
+        return TEMPLATES.TemplateResponse("results.html.jinja", params)
+
+    response = await entries(
+        request     = request,
+        page_title  = "ything",
+        field_query = "",
+        ytdl_query  = f"ytsearch{10 * page}:{search}",
+        page        = page,
+        exclude_ids = account.watched,
+        embedded    = embedded,
+    )
+    response.set_cookie("client_id", account.client_id)
+    return response
 
 
 @APP.get("/results", response_class=HTMLResponse)
@@ -75,18 +98,20 @@ async def results(
     exclude_id:   Optional[str] = None,
     embedded:     bool          = False,
 ):
+    if not search_query:
+        return await home(request)
 
     wanted  = 10 * page
     total   = wanted + (1 if exclude_id else 0)
 
     return await entries(
-        request,
-        search_query,
-        search_query,
-        f"ytsearch{total}:{search_query}",
-        page,
-        exclude_id,
-        embedded,
+        request     = request,
+        page_title  = search_query,
+        field_query = search_query,
+        ytdl_query  = f"ytsearch{total}:{search_query}",
+        page        = page,
+        exclude_ids = [exclude_id] if exclude_id else [],
+        embedded    = embedded,
     )
 
 
@@ -113,12 +138,17 @@ async def channel(
     exclude_id: Optional[str] = None,
     embedded:   bool          = False,
 ):
-    kind       = "channel" if "/channel/" in str(request.url) else "user"
-    url        = f"https://youtube.com/{kind}/{channel_id}/videos"
-    downloader = Downloader(playlistend=page * 10)
+    kind = "channel" if "/channel/" in str(request.url) else "user"
 
     return await entries(
-        request, channel_id, "", url, page, exclude_id, embedded, downloader,
+        request     = request,
+        page_title  = channel_id,
+        field_query = "",
+        ytdl_query  = f"https://youtube.com/{kind}/{channel_id}/videos",
+        page        = page,
+        exclude_ids = [exclude_id] if exclude_id else [],
+        embedded    = embedded,
+        downloader  = Downloader(playlistend=page * 10),
     )
 
 
@@ -134,7 +164,13 @@ async def watch(request: Request, v: str):
     video_id = v
     info     = await video_info(video_id)
     params   = {**info, "request": request}
-    return TEMPLATES.TemplateResponse("watch.html.jinja", params)
+
+    account = get_account(request)
+    await account.record_watch(video_id, info["tags"])
+
+    response = TEMPLATES.TemplateResponse("watch.html.jinja", params)
+    response.set_cookie("client_id", account.client_id)
+    return response
 
 
 @APP.get("/comments", response_class=HTMLResponse)

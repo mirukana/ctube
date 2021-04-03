@@ -53,8 +53,36 @@ def fitting_thumbnail(thumbnails: List[Dict[str, Any]], for_width: int) -> str:
     return thumbnails[-1]["url"]
 
 
+def clean_up_video_tags(*tags: str) -> List[str]:
+    tags = tuple(t.lower() for t in tags)
+
+    final_tags: List[str]            = []
+    words:      Dict[str, List[str]] = {}
+
+    for tag in tags:
+        for word in tag.split():
+            words.setdefault(word, []).append(tag)
+
+    for tag in tags:
+        duplicate_words = False
+
+        for word in tag.split():
+            if len(words[word]) > 2:
+                shortest = min(words[word], key=len)
+
+                if shortest not in final_tags:
+                    final_tags.append(shortest)
+
+                duplicate_words = True
+
+        if not duplicate_words and tag not in final_tags:
+            final_tags.append(tag)
+
+    return final_tags
+
+
 def related_url(video_info: Dict[str, Any]) -> str:
-    terms = (video_info["tags"] or []).copy()
+    terms = clean_up_video_tags(*video_info["tags"] or [])
 
     terms += video_info["title"].split()
     terms += list(set(video_info["description"].split()))
