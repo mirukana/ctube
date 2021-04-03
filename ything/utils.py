@@ -30,8 +30,8 @@ async def video_info(video_id: str) -> Dict[str, Any]:
         "human_duration":   format_duration(info["duration"] or 0),
         "human_views":      format_thousands(info["view_count"] or 0),
         "human_date":       format_date(info["upload_date"] or "?"),
-        "likes":            format_thousands(info["like_count"] or 0),
-        "dislikes":         format_thousands(info["dislike_count"] or 0),
+        "likes":            format_thousands(info.get("like_count") or 0),
+        "dislikes":         format_thousands(info.get("dislike_count") or 0),
         "html_description": linkify(plain2html(info["description"] or "")),
         "ratio":
             ((info["width"] or 0) / (info["height"] or 1)) or 16 / 9,
