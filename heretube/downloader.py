@@ -112,15 +112,18 @@ class Downloader(YoutubeDL):
             if yield_pages >= page:
                 gen, yield_pages = default
 
-            comments    = []
-            reached_end = False
+            comments: List[dict] = []
+            reached_end          = False
 
             for _ in range(20):
-                try:
-                    comments.append(next(gen))
-                except StopIteration:
+                got: Optional[dict]
+                got = await pool_run(next, gen, None)  # type: ignore
+
+                if got is None:
                     reached_end = True
                     break
+
+                comments.append(got)
 
             self._comment_gens[video_id] = (gen, yield_pages + 1)
 
