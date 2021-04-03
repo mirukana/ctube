@@ -21,9 +21,12 @@ A simple self-hosted front-end for YouTube, powered by Youtube-DL.
 
 ## Installation
 
+Requires Python 3.6+ and pip. There might be two pip commands on your system, 
+check `pip3 --version` and `pip --version` to determine which one is available 
+and corresponds to Python 3.
+
 1. Clone the repository: `git clone https://github.com/mirukana/ctube`
 2. Enter the cloned repository: `cd ctube`
-2. Install `python3-pip` and `sassc` from your distro's package manager
 3. Install the python requirements: `pip3 install --user -Ur requirements.txt`
 4. Launch the server: `./run.sh`
 5. Visit some youtube-like URLs, e.g. <http://localhost:8000/results?search_query=example+search>
