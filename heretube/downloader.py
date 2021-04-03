@@ -77,6 +77,10 @@ class Downloader(YoutubeDL):
         return response
 
 
+    async def search(self, query: str) -> Dict[str, Any]:
+        return await pool_run(self.extract_info, query)  # type: ignore
+
+
     async def video_info(self, video_id: str) -> Dict[str, Any]:
         get_info   = partial(self.extract_info, download=False)
         info: dict = await pool_run(get_info, video_id)  # type: ignore

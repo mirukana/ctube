@@ -33,7 +33,7 @@ async def entries(
     downloader:   Downloader      = DOWNLOADER,
 ):
     wanted  = result_count * page
-    entries = downloader.extract_info(ytdl_query)["entries"]
+    entries = (await downloader.search(ytdl_query))["entries"]
     entries = [e for e in entries if e["id"] not in exclude_ids]
     entries = entries[wanted - result_count:wanted]
 
