@@ -1,4 +1,5 @@
 aiofiles         >= 0.4.0,  < 0.7
+appdirs          >= 1.4.4,  < 2
 autolink         >= 0.1.2,  < 0.2
 fastapi          >= 0.61.2, < 0.62
 jinja2           >= 2.11.2, < 3
