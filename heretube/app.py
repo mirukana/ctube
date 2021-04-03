@@ -9,14 +9,14 @@ from fastapi.templating import Jinja2Templates
 
 from .downloader import Downloader
 from .store import Store
-from .utils import (
-    DOWNLOADER, format_duration, format_thousands, plain2html, video_info,
-)
+from .utils import format_duration, format_thousand, plain2html
 
 APP       = FastAPI()
-STORE     = Store()
 CWD       = Path(__file__).parent
 TEMPLATES = Jinja2Templates(directory=str(CWD / "templates"))
+
+STORE      = Store()
+DOWNLOADER = Downloader()
 
 APP.mount("/static", StaticFiles(directory=str(CWD / "static")), name="static")
 
@@ -42,7 +42,7 @@ async def entries(
             "preview_url":    "/preview?video_id=%s" % entry["id"],
             "watch_url":      "/watch?v=%s" % entry["id"],
             "human_duration": format_duration(entry["duration"] or 0),
-            "human_views":    format_thousands(entry["view_count"] or 0),
+            "human_views":    format_thousand(entry["view_count"] or 0),
             "seen_class":     "seen" if entry["id"] in STORE.watched else "",
         })
 
@@ -144,7 +144,7 @@ async def channel(
 
 @APP.get("/preview", response_class=HTMLResponse)
 async def preview(request: Request, video_id: str):
-    info   = await video_info(video_id)
+    info   = await DOWNLOADER.video_info(video_id)
     params = {
         **info,
         "request":    request,
@@ -156,7 +156,7 @@ async def preview(request: Request, video_id: str):
 @APP.get("/watch", response_class=HTMLResponse)
 async def watch(request: Request, v: str):
     video_id = v
-    info     = await video_info(video_id)
+    info     = await DOWNLOADER.video_info(video_id)
     await STORE.record_watch(video_id, info["tags"])
 
     params = {**info, "request": request}

@@ -1,43 +1,8 @@
-import asyncio
 import html
 import re
-from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
-from functools import partial
 from typing import Any, Dict, List
-from urllib.parse import urlencode, urlparse
-
-from autolink import linkify
-
-from .downloader import Downloader
-
-POOL       = ThreadPoolExecutor(max_workers=16)
-DOWNLOADER = Downloader()
-
-pool_run = partial(asyncio.get_event_loop().run_in_executor, POOL)
-
-
-async def video_info(video_id: str) -> Dict[str, Any]:
-    get_info   = partial(DOWNLOADER.extract_info, download=False)
-    info: dict = await pool_run(get_info, video_id)  # type: ignore
-
-    info.update({
-        "small_thumbnail":  fitting_thumbnail(info["thumbnails"], 256),
-        "watch_url":        "/watch?v=%s" % info["id"],
-        "related_url":      related_url(info),
-        "comments_url":     "/comments?video_id=%s" % info["id"],
-        "channel_url":      urlparse(info["channel_url"]).path,
-        "human_duration":   format_duration(info["duration"] or 0),
-        "human_views":      format_thousands(info["view_count"] or 0),
-        "human_date":       format_date(info["upload_date"] or "?"),
-        "likes":            format_thousands(info.get("like_count") or 0),
-        "dislikes":         format_thousands(info.get("dislike_count") or 0),
-        "html_description": linkify(plain2html(info["description"] or "")),
-        "ratio":
-            ((info["width"] or 0) / (info["height"] or 1)) or 16 / 9,
-    })
-
-    return info
+from urllib.parse import urlencode
 
 
 def fitting_thumbnail(thumbnails: List[Dict[str, Any]], for_width: int) -> str:
@@ -130,7 +95,7 @@ def format_date(ytdl_date: str) -> str:  # ytdl format example: 20200102
     return re.sub(r"(\d{4})(\d{2})(\d{2})", r"\1-\2-\3", ytdl_date)
 
 
-def format_thousands(num: float) -> str:
+def format_thousand(num: float) -> str:
     num       = float("{: .3g}".format(num))
     magnitude = 0
 
