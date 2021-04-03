@@ -13,9 +13,7 @@ ZERO_DATE = datetime.fromtimestamp(0)
 
 
 @dataclass
-class Account:
-    client_id: str
-
+class Store:
     _watched: Optional[Set[str]] = field(init=False, default=None)
 
     _tags: Optional[Dict[str, List[float]]] = field(init=False, default=None)
@@ -32,8 +30,7 @@ class Account:
 
     @property
     def folder(self) -> Path:
-        data_dir = Path(user_data_dir("ything", roaming=True))
-        return data_dir / "accounts" / self.client_id
+        return Path(user_data_dir("ything", roaming=True))
 
 
     @property
@@ -72,6 +69,8 @@ class Account:
         self, video_id: str, tags: Collection[str] = (),
     ) -> None:
 
+        tags = clean_up_video_tags(*tags)
+
         if video_id not in self.watched:
             self.watched.add(video_id)
 
@@ -85,9 +84,10 @@ class Account:
             print(f"Already updated tags in the past hour for {video_id}")
             return
 
+        print(f"Updating tags: {video_id}, {tags}")
         self._updated_tags[video_id] = now
 
-        for tag in clean_up_video_tags(*tags):
+        for tag in tags:
             self.tags.setdefault(tag, []).append(now.timestamp())
 
         dumped_tags = json.dumps(
@@ -106,8 +106,4 @@ class Account:
             return sum((w - limit).total_seconds() / 1000 for w in watches)
 
         tags = sorted(self.tags, key=sort_key, reverse=True)
-
-        for t in tags:
-            print(t, sort_key(t), [datetime.fromtimestamp(x) for x in self.tags[t]])
-
         return " ".join(tags[:6])

@@ -1,6 +1,5 @@
 from pathlib import Path
-from typing import Collection, Dict, List, Optional
-from uuid import uuid4
+from typing import Collection, Optional
 
 from autolink import linkify
 from fastapi import FastAPI, Request
@@ -8,24 +7,18 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from .account import Account
 from .downloader import Downloader
+from .store import Store
 from .utils import (
     DOWNLOADER, format_duration, format_thousands, plain2html, video_info,
 )
 
 APP       = FastAPI()
+STORE     = Store()
 CWD       = Path(__file__).parent
 TEMPLATES = Jinja2Templates(directory=str(CWD / "templates"))
 
-LOADED_ACCOUNTS: Dict[str, Account] = {}
-
 APP.mount("/static", StaticFiles(directory=str(CWD / "static")), name="static")
-
-
-def get_account(request: Request) -> Account:
-    client_id = request.cookies.setdefault("client_id", str(uuid4()))
-    return LOADED_ACCOUNTS.setdefault(client_id, Account(client_id))
 
 
 async def entries(
@@ -70,24 +63,21 @@ async def entries(
 
 @APP.get("/", response_class=HTMLResponse)
 async def home(request: Request, page: int  = 1, embedded: bool = False):
-    account = get_account(request)
-    search  = account.recommendations_query()
+    search  = STORE.recommendations_query()
 
     if not search.strip():
         params = {"request": request}
         return TEMPLATES.TemplateResponse("results.html.jinja", params)
 
-    response = await entries(
+    return await entries(
         request     = request,
         page_title  = "ything",
         field_query = "",
         ytdl_query  = f"ytsearch{10 * page}:{search}",
         page        = page,
-        exclude_ids = account.watched,
+        exclude_ids = STORE.watched,
         embedded    = embedded,
     )
-    response.set_cookie("client_id", account.client_id)
-    return response
 
 
 @APP.get("/results", response_class=HTMLResponse)
@@ -163,14 +153,10 @@ async def preview(request: Request, video_id: str):
 async def watch(request: Request, v: str):
     video_id = v
     info     = await video_info(video_id)
-    params   = {**info, "request": request}
+    await STORE.record_watch(video_id, info["tags"])
 
-    account = get_account(request)
-    await account.record_watch(video_id, info["tags"])
-
-    response = TEMPLATES.TemplateResponse("watch.html.jinja", params)
-    response.set_cookie("client_id", account.client_id)
-    return response
+    params = {**info, "request": request}
+    return TEMPLATES.TemplateResponse("watch.html.jinja", params)
 
 
 @APP.get("/comments", response_class=HTMLResponse)
