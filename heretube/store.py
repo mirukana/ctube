@@ -30,7 +30,7 @@ class Store:
 
     @property
     def folder(self) -> Path:
-        return Path(user_data_dir("ything", roaming=True))
+        return Path(user_data_dir("heretube", roaming=True))
 
 
     @property

@@ -1,9 +1,9 @@
 #!/usr/bin/env sh
 
-mkdir -p ything/static/css || exit 1
+mkdir -p heretube/static/css || exit 1
 
 while true; do
-    find ything -type f -not -name 'main.css' -not -path '*__pycache__*' |
+    find heretube -type f -not -name 'main.css' -not -path '*__pycache__*' |
     entr -cdnr sh -c \
-        "sassc ything/styles/main.sass ything/static/css/main.css && sleep 0.2 && killall -9 uvicorn; uvicorn ything:APP $*"
+        "sassc heretube/styles/main.sass heretube/static/css/main.css && sleep 0.2 && killall -9 uvicorn; uvicorn heretube:APP $*"
 done
