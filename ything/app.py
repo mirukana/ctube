@@ -43,6 +43,7 @@ async def entries(
             "watch_url":      "/watch?v=%s" % entry["id"],
             "human_duration": format_duration(entry["duration"] or 0),
             "human_views":    format_thousands(entry["view_count"] or 0),
+            "seen_class":     "seen" if entry["id"] in STORE.watched else "",
         })
 
     prev_url = \
@@ -75,7 +76,6 @@ async def home(request: Request, page: int  = 1, embedded: bool = False):
         field_query = "",
         ytdl_query  = f"ytsearch{10 * page}:{search}",
         page        = page,
-        exclude_ids = STORE.watched,
         embedded    = embedded,
     )
 
@@ -145,7 +145,11 @@ async def channel(
 @APP.get("/preview", response_class=HTMLResponse)
 async def preview(request: Request, video_id: str):
     info   = await video_info(video_id)
-    params = {**info, "request": request}
+    params = {
+        **info,
+        "request":    request,
+        "seen_class": "seen" if info["id"] in STORE.watched else "",
+    }
     return TEMPLATES.TemplateResponse("preview.html.jinja", params)
 
 
