@@ -1,11 +1,12 @@
-import json
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Collection, DefaultDict, Dict, List, Optional, Set
+from typing import Collection, Dict, List, Optional
 
 import aiofiles
+import orjson
 from appdirs import user_data_dir
+from dateutil.parser import parse as parse_date
 
 from .utils import clean_up_video_tags
 
@@ -14,17 +15,15 @@ ZERO_DATE = datetime.fromtimestamp(0)
 
 @dataclass
 class Store:
-    _watched: Optional[Set[str]] = field(init=False, default=None)
+    _seen: Optional[Dict[str, datetime]] = field(init=False, default=None)
 
-    _tags: Optional[Dict[str, List[float]]] = field(init=False, default=None)
-
-    _updated_tags: Dict[str, datetime] = field(  # {video_id: at}
-        init=False, default_factory=lambda: DefaultDict(lambda: ZERO_DATE),
+    _tags: Optional[Dict[str, List[datetime]]] = field(
+        init=False, default=None,
     )
 
 
     def __post_init__(self) -> None:
-        self.watched_file.parent.mkdir(parents=True, exist_ok=True)
+        self.seen_file.parent.mkdir(parents=True, exist_ok=True)
         self.tags_file.parent.mkdir(parents=True, exist_ok=True)
 
 
@@ -34,8 +33,8 @@ class Store:
 
 
     @property
-    def watched_file(self) -> Path:
-        return self.folder / "watched.csv"
+    def seen_file(self) -> Path:
+        return self.folder / "seen.json"
 
 
     @property
@@ -44,57 +43,61 @@ class Store:
 
 
     @property
-    def watched(self) -> Set[str]:
-        if self._watched is None:
-            if self.watched_file.exists():
-                self._watched = set(self.watched_file.read_text().splitlines())
+    def seen(self) -> Dict[str, datetime]:
+        if self._seen is None:
+            if self.seen_file.exists():
+                self._seen = {
+                    video_id: parse_date(last_seen)
+                    for video_id, last_seen in
+                    orjson.loads(self.seen_file.read_text()).items()
+                }
             else:
-                self._watched = set()
+                self._seen = {}
 
-        return self._watched
+        return self._seen
 
 
     @property
-    def tags(self) -> Dict[str, List[float]]:
+    def tags(self) -> Dict[str, List[datetime]]:
         if self._tags is None:
             if self.tags_file.exists():
-                self._tags = json.loads(self.tags_file.read_text())
+                self._tags = {
+                    tag: [parse_date(d) for d in dates]
+                    for tag, dates in
+                    orjson.loads(self.tags_file.read_text()).items()
+                }
             else:
                 self._tags = {}
 
         return self._tags
 
 
-    async def record_watch(
+    async def record_seen(
         self, video_id: str, tags: Collection[str] = (),
     ) -> None:
 
+        last_update         = self.seen.get(video_id, ZERO_DATE)
+        self.seen[video_id] = datetime.now()
+        dumped_seen         = orjson.dumps(self.seen)
+
+        async with aiofiles.open(self.seen_file, "wb") as file:
+            await file.write(dumped_seen)
+
         tags = clean_up_video_tags(*tags)
+        now  = datetime.now()
 
-        if video_id not in self.watched:
-            self.watched.add(video_id)
-
-            async with aiofiles.open(self.watched_file, "w") as file:
-                await file.write("\n".join(self.watched))
-
-
-        now = datetime.now()
-
-        if (now - self._updated_tags[video_id]).total_seconds() < 60 * 60:
+        if (now - last_update).total_seconds() < 60 * 60:
             print(f"Already updated tags in the past hour for {video_id}")
             return
 
         print(f"Updating tags: {video_id}, {tags}")
-        self._updated_tags[video_id] = now
 
         for tag in tags:
-            self.tags.setdefault(tag, []).append(now.timestamp())
+            self.tags.setdefault(tag, []).append(now)
 
-        dumped_tags = json.dumps(
-            self.tags, ensure_ascii=False, indent=4, sort_keys=True,
-        )
+        dumped_tags = orjson.dumps(self.tags)
 
-        async with aiofiles.open(self.tags_file, "w") as file:
+        async with aiofiles.open(self.tags_file, "wb") as file:
             await file.write(dumped_tags)
 
 
@@ -102,8 +105,10 @@ class Store:
         limit = datetime.now() - timedelta(days=30)
 
         def sort_key(tag: str) -> float:
-            watches = [datetime.fromtimestamp(t) for t in self.tags[tag]]
-            return sum((w - limit).total_seconds() / 1000 for w in watches)
+            return sum(
+                (watch_time - limit).total_seconds() / 1000
+                for watch_time in self.tags[tag]
+            )
 
         tags = sorted(self.tags, key=sort_key, reverse=True)
         return " ".join(tags[:6])

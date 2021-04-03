@@ -43,7 +43,7 @@ async def entries(
             "watch_url":      "/watch?v=%s" % entry["id"],
             "human_duration": format_duration(entry["duration"] or 0),
             "human_views":    format_thousand(entry["view_count"] or 0),
-            "seen_class":     "seen" if entry["id"] in STORE.watched else "",
+            "seen_class":     "seen" if entry["id"] in STORE.seen else "",
         })
 
     prev_url = \
@@ -148,7 +148,7 @@ async def preview(request: Request, video_id: str):
     params = {
         **info,
         "request":    request,
-        "seen_class": "seen" if info["id"] in STORE.watched else "",
+        "seen_class": "seen" if info["id"] in STORE.seen else "",
     }
     return TEMPLATES.TemplateResponse("preview.html.jinja", params)
 
@@ -157,7 +157,7 @@ async def preview(request: Request, video_id: str):
 async def watch(request: Request, v: str):
     video_id = v
     info     = await DOWNLOADER.video_info(video_id)
-    await STORE.record_watch(video_id, info["tags"])
+    await STORE.record_seen(video_id, info["tags"])
 
     params = {**info, "request": request}
     return TEMPLATES.TemplateResponse("watch.html.jinja", params)
