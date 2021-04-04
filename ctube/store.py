@@ -111,4 +111,8 @@ class Store:
 
         tags = sorted(self.tags, key=sort_key, reverse=True)
         # for t in reversed(tags): print(t,sort_key(t), self.tags[t], sep="\t")
-        return " ".join(tags[:9])
+
+        if len(tags) > 9:
+            tags = tags[:9]
+
+        return " ".join(tags)
