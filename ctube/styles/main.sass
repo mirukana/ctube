@@ -18,9 +18,19 @@ $accent_dark: hsl(220, 50%, 50%)
 $accent_good: hsl(145, 50%, 50%)
 $accent_bad: hsl(345, 50%, 50%)
 
-$sans: Roboto, "Noto Sans", "Droid Sans", Ubuntu, Verdana, sans-serif
+$sans: Roboto
 
 $anim_time: 0.125s
+
+@each $style in normal, italic
+    @each $weight in 400, 500, 700
+        @font-face
+            font-family: Roboto
+            font-weight: $weight
+            font-style: $style
+
+            $base: "/static/fonts/roboto"
+            src: url("#{$base}-#{$weight}-#{$style}.woff2") format("woff2")
 
 html
     font-size: 62.5%
