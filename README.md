@@ -1,6 +1,6 @@
 # CTube
 
-A simple self-hosted front-end for YouTube, powered by Youtube-DL.
+A simple self-hosted front-end for YouTube, powered by youtube-dl.
 
 
 ## Features
@@ -16,7 +16,7 @@ A simple self-hosted front-end for YouTube, powered by Youtube-DL.
 - Doesn't have a light theme
 - *Currently* uses YouTube's embedded player
 - Uses a stupid amount of iframes to minimize javascript usage and speed up 
-  page rendering while Youtube-DL responses are loading
+  page rendering while youtube-dl responses are loading
 
 
 ## Installation
@@ -40,7 +40,7 @@ for options.
 1. Go to the cloned repository and update the source code: `git pull` 
 2. Update the python requirements: `pip3 install --user -Ur requirements.txt`
 
-Youtube-DL and youtube-comment-downloader, part of the python requirements,
+youtube-dl and youtube-comment-downloader, part of the python requirements,
 need to be frequently kept up-to-date to fix new issues with YouTube.
 
 
