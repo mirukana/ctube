@@ -105,10 +105,12 @@ class Store:
         limit = datetime.now() - timedelta(days=30)
 
         def sort_key(tag: str) -> float:
+            recent_watches = sorted(self.tags[tag], reverse=True)
             return sum(
-                (watch_time - limit).total_seconds() / 1000
-                for watch_time in self.tags[tag]
+                (time - limit).total_seconds() / 1000 / nth ** 5
+                for nth, time in enumerate(recent_watches, 1)
             )
 
         tags = sorted(self.tags, key=sort_key, reverse=True)
+        # for t in reversed(tags): print(t,sort_key(t), self.tags[t], sep="\t")
         return " ".join(tags[:9])
