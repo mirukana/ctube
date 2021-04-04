@@ -10,21 +10,23 @@
     </head>
     <body>
         <nav data-embedded="{{ embedded }}">
-            <form action="/results" class="nav-row">
+            <div class="nav-row">
                 <a class="button homepage" href="/">⌂</a>
 
-                <input
-                    size=50
-                    type="search"
-                    name="search_query"
-                    placeholder="Search"
-                    value="{{ field_query }}"
-                    autocomplete=true
-                    {% if not embedded %}
-                        autofocus=true
-                    {% endif %}
-                >
-            </form>
+                <form action="/results">
+                    <input
+                        size=50
+                        type="search"
+                        name="search_query"
+                        placeholder="Search"
+                        value="{{ field_query }}"
+                        autocomplete=true
+                        {% if not embedded %}
+                            autofocus=true
+                        {% endif %}
+                    >
+                </form>
+            </div>
         </nav>
 
         <div class="thumb-grid">
