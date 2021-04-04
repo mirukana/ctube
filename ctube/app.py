@@ -27,7 +27,7 @@ async def entries(
     field_query:  str,
     ytdl_query:   str,
     page:         int             = 1,
-    result_count: int             = 10,
+    result_count: int             = 12,
     exclude_ids:  Collection[str] = (),
     embedded:     bool            = False,
     downloader:   Downloader      = DOWNLOADER,
@@ -74,7 +74,7 @@ async def home(request: Request, page: int  = 1, embedded: bool = False):
         request     = request,
         page_title  = "CTube",
         field_query = "",
-        ytdl_query  = f"ytsearch{10 * page}:{search}",
+        ytdl_query  = f"ytsearch{12 * page}:{search}",
         page        = page,
         embedded    = embedded,
     )
@@ -91,7 +91,7 @@ async def results(
     if not search_query:
         return await home(request)
 
-    wanted  = 10 * page
+    wanted  = 12 * page
     total   = wanted + (1 if exclude_id else 0)
 
     return await entries(
@@ -138,7 +138,7 @@ async def channel(
         page        = page,
         exclude_ids = [exclude_id] if exclude_id else [],
         embedded    = embedded,
-        downloader  = Downloader(playlistend=page * 10),
+        downloader  = Downloader(playlistend=page * 12),
     )
 
 
