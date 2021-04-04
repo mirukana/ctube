@@ -157,7 +157,7 @@ async def preview(request: Request, video_id: str):
 async def watch(request: Request, v: str):
     video_id = v
     info     = await DOWNLOADER.video_info(video_id)
-    await STORE.record_seen(video_id, info["tags"])
+    await STORE.record_seen(info)
 
     params = {**info, "request": request}
     return TEMPLATES.TemplateResponse("watch.html.jinja", params)

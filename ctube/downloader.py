@@ -17,7 +17,7 @@ from youtube_dl import YoutubeDL
 
 from .utils import (
     fitting_thumbnail, format_date, format_duration, format_thousand,
-    plain2html, related_url,
+    plain2html, related_videos_url,
 )
 
 Comment        = Dict[str, Any]
@@ -88,7 +88,7 @@ class Downloader(YoutubeDL):
         info.update({
             "small_thumbnail": fitting_thumbnail(info["thumbnails"], 256),
             "watch_url":       "/watch?v=%s" % info["id"],
-            "related_url":     related_url(info),
+            "related_url":     related_videos_url(info),
             "comments_url":    "/comments?video_id=%s" % info["id"],
             "channel_url":     urlparse(info["channel_url"]).path,
             "human_duration":  format_duration(info["duration"] or 0),

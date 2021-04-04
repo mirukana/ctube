@@ -46,13 +46,22 @@ def clean_up_video_tags(*tags: str) -> List[str]:
     return final_tags
 
 
-def related_url(video_info: Dict[str, Any]) -> str:
+def related_terms(
+    video_info:           Dict[str, Any],
+    consider_title:       bool = True,
+    consider_description: bool = True,
+) -> List[str]:
+
     terms = clean_up_video_tags(*video_info["tags"] or [])
 
-    terms += video_info["title"].split()
-    terms += list(set(video_info["description"].split()))
+    for word in video_info["title"].split():
+        if consider_title and word not in terms:
+            terms.append(word)
 
-    terms = [t.lower() for t in terms]
+    for word in video_info["description"].split():
+        if consider_description and word not in terms:
+            terms.append(word)
+
     terms = re.split(r"\s+", re.sub(r"\W", " ", " ".join(terms)).strip())
 
     useless_words = {
@@ -78,13 +87,15 @@ def related_url(video_info: Dict[str, Any]) -> str:
     if len(terms) > 9:
         terms = terms[:9]
 
-    params = urlencode({
-        "search_query": " ".join(terms),
+    return terms
+
+
+def related_videos_url(video_info: Dict[str, Any]) -> str:
+    return "/results?%s" % urlencode({
+        "search_query": " ".join(related_terms(video_info)),
         "exclude_id":   video_info["id"],
         "embedded":     True,
     })
-
-    return f"/results?{params}"
 
 
 def format_duration(seconds: float) -> str:

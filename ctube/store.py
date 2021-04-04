@@ -1,14 +1,14 @@
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Collection, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import aiofiles
 import orjson
 from appdirs import user_data_dir
 from dateutil.parser import parse as parse_date
 
-from .utils import clean_up_video_tags
+from .utils import related_terms
 
 ZERO_DATE = datetime.fromtimestamp(0)
 
@@ -72,10 +72,8 @@ class Store:
         return self._tags
 
 
-    async def record_seen(
-        self, video_id: str, tags: Collection[str] = (),
-    ) -> None:
-
+    async def record_seen(self, video_info: Dict[str, Any]) -> None:
+        video_id            = video_info["id"]
         last_update         = self.seen.get(video_id, ZERO_DATE)
         self.seen[video_id] = datetime.now()
         dumped_seen         = orjson.dumps(self.seen)
@@ -83,7 +81,7 @@ class Store:
         async with aiofiles.open(self.seen_file, "wb") as file:
             await file.write(dumped_seen)
 
-        tags = clean_up_video_tags(*tags)
+        tags = related_terms(video_info, consider_description=False)
         now  = datetime.now()
 
         if (now - last_update).total_seconds() < 60 * 60:
