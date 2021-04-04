@@ -111,4 +111,4 @@ class Store:
             )
 
         tags = sorted(self.tags, key=sort_key, reverse=True)
-        return " ".join(tags[:6])
+        return " ".join(tags[:9])
