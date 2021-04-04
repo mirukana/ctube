@@ -1,14 +1,14 @@
+import json
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import aiofiles
-import orjson
 from appdirs import user_data_dir
 from dateutil.parser import parse as parse_date
 
-from .utils import related_terms
+from .utils import json_dumps, related_terms
 
 ZERO_DATE = datetime.fromtimestamp(0)
 
@@ -49,7 +49,7 @@ class Store:
                 self._seen = {
                     video_id: parse_date(last_seen)
                     for video_id, last_seen in
-                    orjson.loads(self.seen_file.read_text()).items()
+                    json.loads(self.seen_file.read_text()).items()
                 }
             else:
                 self._seen = {}
@@ -64,7 +64,7 @@ class Store:
                 self._tags = {
                     tag: [parse_date(d) for d in dates]
                     for tag, dates in
-                    orjson.loads(self.tags_file.read_text()).items()
+                    json.loads(self.tags_file.read_text()).items()
                 }
             else:
                 self._tags = {}
@@ -76,9 +76,9 @@ class Store:
         video_id            = video_info["id"]
         last_update         = self.seen.get(video_id, ZERO_DATE)
         self.seen[video_id] = datetime.now()
-        dumped_seen         = orjson.dumps(self.seen)
+        dumped_seen         = json_dumps(self.seen)
 
-        async with aiofiles.open(self.seen_file, "wb") as file:
+        async with aiofiles.open(self.seen_file, "w") as file:
             await file.write(dumped_seen)
 
         tags = related_terms(video_info, consider_description=False)
@@ -93,9 +93,9 @@ class Store:
         for tag in tags:
             self.tags.setdefault(tag, []).append(now)
 
-        dumped_tags = orjson.dumps(self.tags)
+        dumped_tags = json_dumps(self.tags)
 
-        async with aiofiles.open(self.tags_file, "wb") as file:
+        async with aiofiles.open(self.tags_file, "w") as file:
             await file.write(dumped_tags)
 
 

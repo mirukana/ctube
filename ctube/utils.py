@@ -1,6 +1,7 @@
 import html
+import json
 import re
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Any, Dict, List
 from urllib.parse import urlencode
 
@@ -122,3 +123,13 @@ def format_thousand(num: float) -> str:
 
 def plain2html(text: str) -> str:
     return html.escape(text).replace("\n", "<br>").replace("\t", "&nbsp;" * 4)
+
+
+def json_dumps(data: Any) -> str:
+    def defaults(value: Any) -> Any:
+        if isinstance(value, datetime):
+            return value.isoformat()
+
+        raise TypeError(f"Cannot dump {value}")
+
+    return json.dumps(data, ensure_ascii=False, default=defaults)
