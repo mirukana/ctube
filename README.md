@@ -25,6 +25,9 @@ Requires Python 3.6+ and pip. There might be two pip commands on your system,
 check `pip3 --version` and `pip --version` to determine which one is available 
 and corresponds to Python 3.
 
+Make sure *~/.local/bin* is in your `PATH` (add 
+`export PATH="$HOME/.local/bin:$PATH"` to `/etc/profile`).
+
 1. Clone the repository: `git clone https://github.com/mirukana/ctube`
 2. Enter the cloned repository: `cd ctube`
 3. Install the python requirements: `pip3 install --user -Ur requirements.txt`
