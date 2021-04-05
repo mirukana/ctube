@@ -84,8 +84,8 @@ class Store:
         tags = related_terms(video_info, consider_description=False)
         now  = datetime.now()
 
-        if (now - last_update).total_seconds() < 60 * 60:
-            print(f"Already updated tags in the past hour for {video_id}")
+        if (now - last_update).total_seconds() < 60 * 60 * 12:
+            print(f"Already updated tags in the past 12 hours for {video_id}")
             return
 
         print(f"Updating tags: {video_id}, {tags}")
