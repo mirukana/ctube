@@ -64,20 +64,26 @@ async def entries(
 
 @APP.get("/", response_class=HTMLResponse)
 async def home(request: Request, page: int  = 1, embedded: bool = False):
-    search  = STORE.recommendations_query()
+    search_terms = STORE.recommendations_query()
 
-    if not search.strip():
-        params = {"request": request}
-        return TEMPLATES.TemplateResponse("results.html.jinja", params)
+    while search_terms:
+        result = await entries(
+            request     = request,
+            page_title  = "CTube",
+            field_query = "",
+            ytdl_query  = f"ytsearch{12 * page}:{''.join(search_terms)}",
+            page        = page,
+            embedded    = embedded,
+        )
 
-    return await entries(
-        request     = request,
-        page_title  = "CTube",
-        field_query = "",
-        ytdl_query  = f"ytsearch{12 * page}:{search}",
-        page        = page,
-        embedded    = embedded,
-    )
+        if len(result.context["entries"]) >= 12:
+            return result
+
+        print(f"No results for {search_terms!r}, halving query")
+        search_terms = search_terms[:len(search_terms) // 2]
+
+    params = {"request": request}
+    return TEMPLATES.TemplateResponse("results.html.jinja", params)
 
 
 @APP.get("/results", response_class=HTMLResponse)
