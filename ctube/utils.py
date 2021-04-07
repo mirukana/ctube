@@ -19,55 +19,35 @@ def fitting_thumbnail(thumbnails: List[Dict[str, Any]], for_width: int) -> str:
     return thumbnails[-1]["url"]
 
 
-def deduplicate_video_tags(*tags: str) -> List[str]:
-    tags = tuple(t.lower() for t in tags)
+def deduplicate_video_terms(*terms: str) -> List[str]:
+    terms = tuple(t.lower() for t in terms)
 
-    final_tags: List[str]            = []
-    words:      Dict[str, List[str]] = {}
+    final_terms: List[str]            = []
+    words:       Dict[str, List[str]] = {}
 
-    for tag in tags:
-        for word in tag.split():
-            words.setdefault(word, []).append(tag)
+    for term in terms:
+        for word in term.split():
+            words.setdefault(word, []).append(term)
 
-    for tag in tags:
+    for term in terms:
         duplicate_words = False
 
-        for word in tag.split():
+        for word in term.split():
             if len(words[word]) > 2:
                 shortest = min(words[word], key=len)
 
-                if shortest not in final_tags:
-                    final_tags.append(shortest)
+                if shortest not in final_terms:
+                    final_terms.append(shortest)
 
                 duplicate_words = True
 
-        if not duplicate_words and tag not in final_tags:
-            final_tags.append(tag)
+        if not duplicate_words and term not in final_terms:
+            final_terms.append(term)
 
-    return final_tags
+    return final_terms
 
 
-def related_terms(
-    video_info:           Dict[str, Any],
-    consider_title:       bool = True,
-    consider_description: bool = True,
-) -> List[str]:
-
-    terms = video_info["tags"] or []
-
-    for word in video_info["title"].split():
-        if consider_title and word not in terms:
-            terms.append(word)
-
-    for word in video_info["description"].split():
-        if consider_description and word not in terms:
-            terms.append(word)
-
-    # Turn special characters into spaces and remove all extra whitespace
-    terms = re.split(r"\s+", re.sub(r"\W", " ", " ".join(terms)).strip())
-
-    terms = deduplicate_video_tags(*terms)
-
+def related_terms(video_info: Dict[str, Any], max_terms: int = 9) -> List[str]:
     useless_words = {
         "ourselves", "hers", "between", "yourself", "but", "again", "there",
         "about", "once", "during", "out", "very", "having", "with", "they",
@@ -84,12 +64,36 @@ def related_terms(
         "too", "only", "myself", "which", "those", "i", "after", "few", "whom",
         "t", "being", "if", "theirs", "my", "against", "a", "by", "doing",
         "it", "how", "further", "was", "here", "than",
-    }
+    }  # taken from NLTK
 
-    terms = [t for t in terms if t not in useless_words]
+    def cleanup(term: str) -> List[str]:
+        # Blank out special characters like punctuation and remove casing
+        word = re.sub(r"\W", " ", term).lower()
 
-    if len(terms) > 9:
-        terms = terms[:9]
+        # Normalize whitespace
+        word = re.sub(r"\s+", " ", word).strip()
+
+        # Split CJK "words" that are combined with latin without whitespace
+        parts = [t for t in re.split(r"([\u4e00-\u9fff]+)", word) if t.strip()]
+
+        # Try to exclude words that aren't topics/subjects/nouns
+        return [p for p in parts if p not in useless_words]
+
+    terms = []
+
+    for tag in (video_info["tags"] or []):
+        for term in cleanup(tag):
+            terms.append(term)
+
+    for word in video_info["title"].split():
+        for term in cleanup(word):
+            if term not in terms:
+                terms.append(term)
+
+    terms = deduplicate_video_terms(*terms)
+
+    if len(terms) > max_terms:
+        terms = terms[:max_terms]
 
     return terms
 

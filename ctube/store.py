@@ -81,7 +81,7 @@ class Store:
         async with aiofiles.open(self.seen_file, "w") as file:
             await file.write(dumped_seen)
 
-        tags = related_terms(video_info, consider_description=False)
+        tags = related_terms(video_info)
         now  = datetime.now()
 
         if (now - last_update).total_seconds() < 60 * 60 * 12:
