@@ -19,7 +19,7 @@ def fitting_thumbnail(thumbnails: List[Dict[str, Any]], for_width: int) -> str:
     return thumbnails[-1]["url"]
 
 
-def clean_up_video_tags(*tags: str) -> List[str]:
+def deduplicate_video_tags(*tags: str) -> List[str]:
     tags = tuple(t.lower() for t in tags)
 
     final_tags: List[str]            = []
@@ -53,7 +53,7 @@ def related_terms(
     consider_description: bool = True,
 ) -> List[str]:
 
-    terms = clean_up_video_tags(*video_info["tags"] or [])
+    terms = video_info["tags"] or []
 
     for word in video_info["title"].split():
         if consider_title and word not in terms:
@@ -63,7 +63,10 @@ def related_terms(
         if consider_description and word not in terms:
             terms.append(word)
 
+    # Turn special characters into spaces and remove all extra whitespace
     terms = re.split(r"\s+", re.sub(r"\W", " ", " ".join(terms)).strip())
+
+    terms = deduplicate_video_tags(*terms)
 
     useless_words = {
         "ourselves", "hers", "between", "yourself", "but", "again", "there",
