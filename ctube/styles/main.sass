@@ -138,12 +138,12 @@ iframe
         .thumb-grid
             max-width: $preview_hspace * $row_thumbs
 
-.thumb-wrapper
-    margin: $spacing
+// .thumb-wrapper
+    // margin: $spacing
 
 .thumb-wrapper, .thumb-wrapper iframe
-    width: $preview_width
-    height: $preview_height
+    width: $preview_width + $spacing * 2
+    height: $preview_height + $spacing * 2
 
 .thumb.placeholder, .thumb-wrapper iframe
     position: absolute
@@ -154,6 +154,7 @@ iframe
 .thumb
     display: block
     width: $preview_width
+    margin: $spacing
 
 .thumb .image-wrapper
     width: $preview_width

@@ -4,25 +4,25 @@
         <meta charset="utf-8">
         <link rel="stylesheet" href="/static/css/main.css">
     </head>
-    <body class="{{ seen_class }}">
-        <a href="{{ watch_url }}" class="thumb" target="_top">
-            <div class="image-wrapper">
-                <img src="{{ small_thumbnail }}" loading="lazy">
-                <div class="thumb-duration">{{ human_duration }}</div>
-            </div>
-
-            <div class="thumb-title">{{ title }}</div>
-
-            <div class="thumb-uploader">
-                <a href="{{ channel_url }}" target="_top">{{ uploader }}</a>
-            </div>
-
-            <div class="thumb-details">
-                <span><span class="icon">🠝</span> {{ human_date }}</span>
-                <span><span class="icon">⦿</span> {{ human_views }}</span>
-                <span><span class="icon good">👍</span> {{ likes }}</span>
-                <span><span class="icon bad">👎</span> {{ dislikes }}</span>
-            </div>
+    <body class="thumb {{ seen_class }}">
+        <a href="{{ watch_url }}" class="image-wrapper" target="_top">
+            <img src="{{ small_thumbnail }}" loading="lazy">
+            <div class="thumb-duration">{{ human_duration }}</div>
         </a>
+
+        <div class="thumb-title">
+            <a href="{{ watch_url }}" target="_top">{{ title }}</a>
+        </div>
+
+        <div class="thumb-uploader">
+            <a href="{{ channel_url }}" target="_top">{{ uploader }}</a>
+        </div>
+
+        <div class="thumb-details">
+            <span><span class="icon">🠝</span> {{ human_date }}</span>
+            <span><span class="icon">⦿</span> {{ human_views }}</span>
+            <span><span class="icon good">👍</span> {{ likes }}</span>
+            <span><span class="icon bad">👎</span> {{ dislikes }}</span>
+        </div>
     </body>
 </html>
