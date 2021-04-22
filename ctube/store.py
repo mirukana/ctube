@@ -105,7 +105,7 @@ class Store:
         def sort_key(tag: str) -> float:
             recent_watches = sorted(self.tags[tag], reverse=True)
             return sum(
-                (time - limit).total_seconds() / 1000 / nth ** 5
+                (time - limit).total_seconds() / 1000 / nth ** 3.5
                 for nth, time in enumerate(recent_watches, 1)
             )
 
