@@ -1,5 +1,7 @@
+import asyncio
+import random
 from pathlib import Path
-from typing import Collection, Optional
+from typing import Any, Collection, Dict, List, Optional
 
 from autolink import linkify
 from fastapi import FastAPI, Request
@@ -64,25 +66,43 @@ async def entries(
 
 @APP.get("/", response_class=HTMLResponse)
 async def home(request: Request, page: int  = 1, embedded: bool = False):
-    search_terms = STORE.recommendations_query()
+    terms  = STORE.recommendations_query(4 * 3)
+    groups = [terms[i:i + 3] for i in range(0, len(terms), 3)]
+    print(groups)
 
-    while search_terms:
-        result = await entries(
+    results = await asyncio.gather(*[
+        entries(
             request     = request,
             page_title  = "CTube",
             field_query = "",
-            ytdl_query  = f"ytsearch{12 * page}:{''.join(search_terms)}",
+            ytdl_query  = f"ytsearch{12 * page}:{' '.join(group)}",
             page        = page,
             embedded    = embedded,
-        )
+        ) for group in groups
+    ])
 
-        if len(result.context["entries"]) >= 12:
-            return result
+    videos: List[Dict[str, Any]] = []
 
-        print(f"No results for {search_terms!r}, halving query")
-        search_terms = search_terms[:len(search_terms) // 2]
+    for result in results:
+        if result.context["entries"]:
+            videos += random.choices(result.context["entries"], k=3)
 
-    params = {"request": request}
+    for res in results[1:]:
+        results[0].context["entries"] += res.context["entries"]
+
+    prev_url = \
+        request.url.include_query_params(page=page - 1) if page > 1 else ""
+
+    params = {
+        "request":     request,
+        "page_title":  "CTube",
+        "field_query": "",
+        "entries":     videos,
+        "page_num":    page,
+        "prev_url":    prev_url,
+        "next_url":    request.url.include_query_params(page = page + 1),
+        "embedded":    embedded,
+    }
     return TEMPLATES.TemplateResponse("results.html.jinja", params)
 
 

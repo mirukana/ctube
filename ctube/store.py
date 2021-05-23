@@ -100,7 +100,7 @@ class Store:
             await file.write(dumped_tags)
 
 
-    def recommendations_query(self) -> str:
+    def recommendations_query(self, term_count: int) -> List[str]:
         limit = datetime.now() - timedelta(days=30)
 
         def score(tag: str, recent_watches: List[datetime]) -> float:
@@ -110,7 +110,6 @@ class Store:
                 for nth, time in enumerate(recent_watches, 1)
             )
 
-        tags     = self.tags
-        scores   = [score(t, rc) for t, rc in tags.items()]
-        selected = random.choices(list(tags), scores, k=min(len(tags), 5))
-        return " ".join(selected)
+        tags   = self.tags
+        scores = [score(t, rc) for t, rc in tags.items()]
+        return random.choices(list(tags), scores, k=min(len(tags), term_count))
