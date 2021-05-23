@@ -85,7 +85,7 @@ async def home(request: Request, page: int  = 1, embedded: bool = False):
 
     for result in results:
         if result.context["entries"]:
-            videos += random.choices(result.context["entries"], k=3)
+            videos += random.sample(result.context["entries"], k=3)
 
     for res in results[1:]:
         results[0].context["entries"] += res.context["entries"]
