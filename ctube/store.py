@@ -1,4 +1,5 @@
 import json
+import random
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -102,17 +103,14 @@ class Store:
     def recommendations_query(self) -> str:
         limit = datetime.now() - timedelta(days=30)
 
-        def sort_key(tag: str) -> float:
-            recent_watches = sorted(self.tags[tag], reverse=True)
+        def score(tag: str, recent_watches: List[datetime]) -> float:
+            recent_watches.sort(reverse=True)
             return sum(
-                (time - limit).total_seconds() / 1000 / nth ** 3.5
+                (time - limit).total_seconds() / 1000 / nth ** 2
                 for nth, time in enumerate(recent_watches, 1)
             )
 
-        tags = sorted(self.tags, key=sort_key, reverse=True)
-        # for t in reversed(tags): print(t,sort_key(t), self.tags[t], sep="\t")
-
-        if len(tags) > 9:
-            tags = tags[:9]
-
-        return " ".join(tags)
+        tags     = self.tags
+        scores   = [score(t, rc) for t, rc in tags.items()]
+        selected = random.choices(list(tags), scores, k=min(len(tags), 5))
+        return " ".join(selected)
