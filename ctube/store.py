@@ -101,12 +101,12 @@ class Store:
 
 
     def recommendations_query(self, term_count: int) -> List[str]:
-        limit = datetime.now() - timedelta(days=30)
+        limit = datetime.now() - timedelta(days=60)
 
         def score(tag: str, recent_watches: List[datetime]) -> float:
             recent_watches.sort(reverse=True)
             return sum(
-                (time - limit).total_seconds() / 1000 / nth ** 2
+                (time - limit).total_seconds() / 1000 / nth ** 3.5
                 for nth, time in enumerate(recent_watches, 1)
             )
 
